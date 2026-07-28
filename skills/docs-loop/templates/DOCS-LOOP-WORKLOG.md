@@ -1,26 +1,35 @@
-# DOCS-LOOP WORKLOG — scope: {{SCOPE}}
+# DOCS-LOOP WORKLOG
 
-> Append-only journal of the docs sweep. **Newest entry at the BOTTOM.** One entry per completed repo.
-> A "done" entry MUST carry real evidence — file:line anchors for the claims changed, `mmlint` result, and
-> the PR link. "Looks fresh" or "should be fine" is not evidence.
+> Append-only evidence log for authorized APPLY and OPEN-PRS runs. DRY-RUN emits a report and does not
+> create or update this file.
 
-## TL;DR (read this first — updated each repo)
+## Run
 
-- Where it stands: 0 / {{N}} repos done · plateau {{P}}/3 · θ={{THETA}}
-- Last repo: —
-- Open deferrals: see DOCS-LOOP-DEFERRED.md
+- state format: 1
+- scope: {{SCOPE}}
+- canonical scope fingerprint: {{SCOPE_FINGERPRINT}}
+- mode: {{MODE}}
+- started: {{STARTED_AT}}
 
-## Log
+## Entries
 
-<!-- Append one block per completed repo, newest at the bottom. Copy this shape:
+<!--
+Append one real entry after each repository reaches a terminal status. Do not add sample entries, fake PR
+URLs, or unresolved placeholders.
 
-### {{REPO}} — docs synced ({{DATE}})
-- Audited: <files> — <n> docs, <m> had drift.
-- Shipped: <the specific claims corrected, each with the code anchor that proves the new value: file:line>.
-- Deferred: <doc + why> → DOCS-LOOP-DEFERRED.md #<n>   (omit if none)
-- Verified: fresh reviewer re-checked each claim vs code; mmlint OK <k>/<k>; secret scan clean.
-- Evidence: PR <link>  ·  CI <green|n/a>.
-- Ledger: {{REPO}} → DONE; plateau_repos → <reset 0 | +1>.
+Each entry records:
+- timestamp and canonical repository path;
+- terminal status and non-sensitive reason;
+- queried remote, default branch, and pinned base commit;
+- isolated branch and preserved/removed worktree path;
+- documentation audited and exact files changed;
+- each changed claim with affirmative file:line evidence;
+- deferred findings with their deferred-record identifiers;
+- fresh-review result and every available linter/check command with fresh outcome;
+- staged-document regex scan and installed-gitleaks outcome;
+- mode-specific deliverable:
+  - APPLY: preserved worktree path, no commit or PR;
+  - OPEN-PRS: commit identifier, PR URL, and PR-tied checks outcome.
 
-(If a repo audited CLEAN with no drift: "### {{REPO}} — audited clean, no edits ({{DATE}}) — plateau +1".)
+Never record credential values or copy sensitive governing-instruction content.
 -->

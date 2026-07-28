@@ -1,25 +1,53 @@
 # REFINE BACKLOG — {{TARGET}}
 
-> The loop's memory AND its stop signal. The counters below are checked against **this file** at the
-> end of every round — never against the model's own judgement (agents have no built-in concept of
-> "done"). Candidates are scored `ROI = Impact × Confidence ÷ Effort` on a 1–5 scale; **Tier-0**
-> (correctness / security / data-loss / SPOF) bypasses the θ gate and is always fixed.
+This file is the authoritative stop state in `{{STATE_DIR}}`. Resume is valid only when
+`REFINE-GOAL.md`, `REFINE-BACKLOG.md`, and `REFINE-WORKLOG.md` all exist and agree.
 
-## Loop state — the stop counters (update EVERY round)
-- **round:** 0 / {{MAX_ROUNDS}}
-- **θ (threshold):** {{THETA}}
-- **plateau_count:** 0 / {{K}}   — consecutive rounds with **no** accepted candidate above θ → **SUCCESS** stop
-- **fail_count:** 0 / {{N}}   — consecutive rounds where discovery/execution itself **errored** → **ERROR** stop
+## State identity
+
+- **format:** 1
+- **target:** {{TARGET}}
+- **state directory:** `{{STATE_DIR}}`
+- **canonical repository root:** `{{CANONICAL_REPOSITORY_ROOT}}`
+- **Git common directory:** `{{GIT_COMMON_DIR}}`
+
+## Loop state
+
+- **outcome:** none
+- **segment:** 1
+- **round:** 0 / 25
+- **theta:** 2.0
+- **plateau_count:** 0 / 3
+- **fail_count:** 0 / 3
+- **last_completed_round:** none
+
+Outcome is one of `SUCCESS`, `BUDGET`, `ERROR`, `NEEDS-FIX`, or `CANCELLED` only when terminal.
 
 ## Candidates
-| ID | Lens | Tier | Candidate | Impact | Conf | Effort | ROI | Status |
-|----|------|------|-----------|:------:|:----:|:------:|:---:|--------|
-| {{FIRST_ID}} | {{LENS}} | {{TIER}} | {{CANDIDATE}} | – | – | – | – | proposed |
 
-<!-- Status vocab: proposed → accepted (shipped + externally verified) | rejected (below θ, parked) |
-     rolled-back (regressed, reverted) | blocked. Lens ∈ {architecture, usability, production, refactoring}.
-     Tier ∈ {T0 (must-fix, ignores θ), T1 (ROI-gated)}. Weight Impact by blast radius (churn×complexity
-     hotspots + hot user paths beat dead-code tidying). Below-θ candidates STAY in the table (parked). -->
+| ID | Lens | Finding family | Evidence | Impact | Confidence | Effort | ROI | Status |
+|---|---|---|---|---:|---:|---:|---:|---|
 
-## Parked below θ={{THETA}} (surfaced on stop — lower θ to reach these)
-- _(none yet)_
+Candidate status: `proposed`, `accepted`, `below-threshold`, `cooldown`, `blocked-protected-path`, or
+`rolled-back`.
+
+## NEEDS-FIX handoffs
+
+| ID | Severity | Class | Evidence | Recommended workflow | Status |
+|---|---|---|---|---|---|
+
+Use this section for correctness, security, privacy, data-loss, destructive-operation, or other
+behavior-changing findings. This loop does not execute them. Status is `open` or `handed-off`.
+
+## Out-of-scope goal handoffs
+
+| ID | Lens | Desired behavior change | Evidence | Status |
+|---|---|---|---|---|
+
+## Protected baseline paths
+
+No paths recorded.
+
+## Finding-family cooldowns
+
+No families on cooldown.

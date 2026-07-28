@@ -1,23 +1,34 @@
-# DOCS-LOOP DEFERRED — doc calls that need Sergio
+# DOCS-LOOP DEFERRED
 
-> Human-only doc decisions the loop parked instead of guessing. Each stays until Sergio resolves it;
-> resolutions are stamped and appended, **never deleted** — the trail is the point. Ideally this file stays
-> nearly empty, because in neutral repos `/alex-research!` should settle most intent first.
+> Append-only decisions that cannot be resolved from affirmative repository evidence. DRY-RUN includes
+> deferrals in its report and does not create or update this file.
 
-Defer here (do NOT auto-edit) when a doc change needs judgment the code can't give: a roadmap/strategy/
-positioning call, an ambiguous stale section where you'd be guessing, a product decision (deprecate/rename a
-public thing), licensing/legal/security-posture wording, deleting a doc, or anything that would name a person
-or cite a call.
+## Run identity
 
----
+- state format: 1
+- mode: {{MODE}}
+- canonical scope fingerprint: {{SCOPE_FINGERPRINT}}
 
-<!-- Append one block per deferred call. Copy this shape:
+## Open items
 
-## #{{N}} — {{REPO}}: {{one-line title}}   ({{DATE}})
-- **Context:** what the doc says now, what the code shows, why it can't be settled from code alone.
-- **Default taken:** the reversible thing done meanwhile (usually: left the doc as-is / annotated, opened no
-  PR for this doc). The confident edits in the same repo still shipped.
-- **To change:** the exact edit to make once Sergio decides — and the question for him, in one line.
-- **/alex-research! tried?** yes/no — and what it returned.
-- _Resolved {{DATE}}:_ <appended when Sergio answers; the original block is left intact above>
+<!--
+Append only real deferred items. Do not pre-populate fake unresolved entries.
+
+Each item records:
+- stable identifier, timestamp, and canonical repository path;
+- document and line;
+- the current claim;
+- evidence checked and why it is absent, ambiguous, transient, or intent-dependent;
+- classification: UNKNOWN, product intent, roadmap, legal, licensing, security posture, deletion, or other
+  human-only judgment;
+- reversible action taken, normally leaving the text unchanged;
+- exact decision needed from a maintainer;
+- any safe edits delivered separately and their worktree or PR link.
+
+Do not copy sensitive instruction text, credentials, private operational details, or unredacted scanner
+matches.
 -->
+
+## Resolved items
+
+<!-- Move no content. Append a dated resolution beneath the original open item, then list its identifier here. -->

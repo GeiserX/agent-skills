@@ -1,24 +1,34 @@
 # REFINE WORKLOG — {{TARGET}}
 
-> Append-only, newest entry at the **bottom**. Every "done" carries external evidence (test / build /
-> reviewer verdict — never self-report). A fresh session resumes from the bottom entry +
-> `REFINE-BACKLOG.md` alone.
+Append-only evidence in `{{STATE_DIR}}`. Resume is valid only when `REFINE-GOAL.md`,
+`REFINE-BACKLOG.md`, and `REFINE-WORKLOG.md` all exist with matching immutable state identity.
 
-## TL;DR (updated each round)
-- **Where it stands:** {{CURRENT_STATE_ONE_LINER}}
-- **Round:** 0 / {{MAX_ROUNDS}} · **θ:** {{THETA}} · **plateau:** 0 / {{K}}
-- **Shipped / parked:** 0 shipped / 0 parked below θ
+## State identity
 
-## Log
-### Round 1 — kickoff ({{DATE}})
-- Scaffolded REFINE-GOAL / REFINE-BACKLOG / worklog. θ={{THETA}}, focus={{FOCUS}}.
-- **Next:** first DISCOVER pass across all four lenses.
-- **Evidence:** —
+- **format:** 1
+- **target:** {{TARGET}}
+- **state directory:** `{{STATE_DIR}}`
+- **canonical repository root:** `{{CANONICAL_REPOSITORY_ROOT}}`
+- **Git common directory:** `{{GIT_COMMON_DIR}}`
 
-<!-- Per-round entry format (append below, newest at the bottom):
-### Round N — <one-line theme> (θ=<θ> · plateau <p>/<K>)
-- Shipped: <candidate> — <what changed>   [ADR-<nnnn> if structural]
-- Verified: <tests N pass / build ok / reviewer verdict>   ← external evidence, never self-report
-- Parked below θ: <candidate> (ROI <x>)
-- Counters: plateau_count=<p>, fail_count=<f>
--->
+Current counters live only in `REFINE-BACKLOG.md`. Each round entry below records the counter
+snapshot that resulted from that round.
+
+## Preflight baseline
+
+- **Branch or revision:** {{BASELINE_REVISION}}
+- **Protected dirty paths:** {{PROTECTED_DIRTY_PATHS}}
+- **Baseline checks:** {{BASELINE_CHECKS}}
+
+## Rounds
+
+<!-- For each completed round, append:
+     - date, segment, round number, and covered lenses
+     - discovered candidates and score evidence
+     - NEEDS-FIX and goal handoffs
+     - owned paths and exact change
+     - focused and repository check results
+     - fresh reviewer identity and verdict
+     - rollback evidence when applicable
+     - round, plateau_count, and fail_count after the round
+     - terminal outcome or manual-resume status -->

@@ -1,70 +1,102 @@
-# docs-loop — staleness signals (what the auditors look for)
+# docs-loop staleness signals
 
-"Up to date" is a **staleness predicate keyed to concrete drift**, not "rewrite until it feels current."
-Absent a detected signal, the correct action is to **leave the doc alone.** Each auditor reads ONE doc plus
-the repo's code (in the `origin/main` worktree) and returns per-claim tuples — it **never edits**.
+Audit documentation against the pinned commit from the repository's queried default branch. Auditing is
+read-only in every mode; editing starts only after findings are independently confirmed and the invocation
+authorizes APPLY.
 
-## The detection rules
+## Evidence rule
 
-1. **Factual drift** — the doc states a value the code contradicts. The highest-yield, most-verifiable class:
-   - ports, env-var names, file paths, CLI flags/subcommands, function/endpoint signatures, config keys,
-     bundle IDs, version numbers, default values.
-   - Verify by grepping the code for the literal: a documented `--flag` that no CLI source defines, an env var
-     the code never reads, a port that changed. A doc value that isn't greppable in the code is **WRONG**.
-   - Wrong facts are **Tier-0** (bypass θ) — a wrong port or a command that would fail is worse than silence.
+Search absence is not contradiction. A grep miss, an unfamiliar symbol, or an old timestamp can justify
+more investigation, but cannot justify an edit.
 
-2. **Structural drift** — the doc describes an architecture/module layout that has moved:
-   - renamed/split/merged modules or repos, a subsystem that replaced another, a directory that no longer
-     exists.
-   - **Mermaid diagrams** whose nodes no longer match the file tree / package list.
+Use `WRONG` or `STALE` only with affirmative contradictory evidence:
 
-3. **Dead references** — links/paths to files, anchors, or URLs that no longer resolve:
-   ```bash
-   git -C "$wt" ls-files > /tmp/tracked                  # cross-check doc-referenced paths against reality
-   command -v lychee >/dev/null && lychee --offline "$wt"/**/*.md   # dead relative links/anchors
-   ```
+- code or configuration defines a different current value;
+- generated CLI/API output differs from the documented command or signature;
+- Git tracks a replacement path or module and current references use it;
+- authoritative project metadata names a different supported version or default;
+- a relative link or anchor is deterministically unresolved;
+- a diagram contradicts the current tracked structure or fails to parse.
 
-4. **Coverage gaps** — a shipped subsystem (new top-level dir / package) with **no doc at all**. Flag as
-   `MISSING`; a *new* doc is a bigger commitment than a patch, so a coverage gap is usually a **DEFER** (it
-   may need intent/positioning the code can't give) unless the scope explicitly asks to fill it.
+If the evidence only fails to confirm the claim, use `UNKNOWN` and defer. Never delete, soften, or rewrite a
+claim solely because no supporting grep hit was found.
 
-5. **Cheap age heuristic (pre-filter, not proof)** — a doc older than the code it covers is *suspect*, worth
-   an auditor's look; it is **not** by itself a reason to edit:
-   ```bash
-   git -C "$wt" log -1 --format=%cd --date=short -- README.md
-   git -C "$wt" log -1 --format=%cd --date=short -- src/    # doc older than code → audit it
-   ```
-   Also: `"Last updated: <old date>"` footers, and a doc whose only change in months was cosmetic.
+## Signals
 
-## Mechanical pre-filters (run before spending auditor budget)
+### Factual drift
 
-Cheap, deterministic passes catch a large share of drift with no LLM cost — run them first and feed the
-auditors the flagged subset:
+Check concrete, externally useful claims:
 
-- **markdownlint** — structural Markdown breakage (heading hierarchy, malformed tables).
-- **lychee** — dead links/anchors (above).
-- **symbol-rename grep** — for each renamed/removed symbol you can see in `git log`, grep the docs for the old
-  name still referenced.
-- **mmlint** — `node ~/.claude/tools/mmlint/lint.mjs <file.md>` — a diagram that no longer *parses* is
-  drift too (and must pass before you ship any edit regardless).
+- ports, environment variable names, defaults, and config keys;
+- CLI flags, subcommands, examples, and exit behavior;
+- API routes, parameters, signatures, and response fields;
+- file paths, package/module names, runtime requirements, and supported versions;
+- install, build, test, migration, and deployment commands.
 
-## The auditor's return shape (structured, no edits)
+A conflicting current definition is `WRONG`. A true value tied to an obsolete interface is `STALE`.
+Ambiguous ownership or multiple active definitions is `UNKNOWN`.
 
-Each auditor returns, per claim it examined:
+### Structural drift
 
+Compare architecture and component descriptions with tracked packages, modules, entry points, and
+dependency configuration. A rename or replacement requires evidence connecting the old and new structures;
+a missing old path by itself is not enough.
+
+Check every Mermaid block in a changed file for both semantic consistency and parser validity when a parser
+is available.
+
+### Dead references
+
+Check all tracked Markdown, MDX, reStructuredText, and AsciiDoc files in scope. Do not skip arbitrary
+directories or filenames. Resolve relative links from the source document, validate local anchors, and
+separate deterministic local failures from transient network failures.
+
+Use the null-delimited `find` workflow in
+[safety-contract.md](safety-contract.md#gate-7--portable-link-checks). A missing local tracked target is
+`WRONG`; an unavailable external URL is `UNKNOWN` unless authoritative evidence confirms removal or
+replacement.
+
+### Coverage gaps
+
+Use `MISSING` only when the explicit scope requires documentation for a shipped public surface and no
+current documentation covers it. New narrative, roadmap, legal, licensing, positioning, or security-posture
+text requires human intent and is `UNKNOWN`/`DEFERRED`.
+
+### Age and churn
+
+Documentation older than related code, recent symbol renames, and high code churn are prioritization
+signals only. They are never proof and never permit extrapolation to another repository.
+
+## Finding format
+
+Return one row per examined claim:
+
+```text
+doc:line | claim | affirmative evidence file:line | verdict | proposed action | confidence
 ```
-doc:line | claim (verbatim) | code-truth (file:line, or "none found") | verdict | suggested-fix | confidence
-verdict  ∈ { MATCHES | STALE | WRONG | MISSING }
-confidence ∈ { high | medium | low }   # low confidence = you couldn't pin the code truth → DEFER, don't guess
-```
 
-You (main thread) synthesize these — and when an auditor claims a contradiction, **grep the code yourself to
-confirm before acting.** Trust, but verify: an auditor is a lead, not a license to edit.
+Allowed verdicts:
 
-## Scoring reminder (how a signal becomes an edit)
+- `MATCHES`: affirmative evidence agrees; leave unchanged.
+- `STALE`: affirmative evidence shows an obsolete interface or structure.
+- `WRONG`: affirmative evidence directly contradicts the claim.
+- `MISSING`: explicit scope requires coverage for a confirmed shipped public surface.
+- `UNKNOWN`: evidence is absent, ambiguous, transient, or intent-dependent; defer.
 
-- `WRONG` / dangerously-misleading + confidently verifiable → **Tier-0**, fix now (bypasses θ).
-- `STALE` / clarity / a fixable diagram → **Tier-1**, edit only if `ROI = Impact × Confidence ÷ Effort ≥ θ`.
-- `MISSING` (coverage gap) → usually **DEFER** unless scope says fill it.
-- `confidence: low` (can't pin the code truth) → **DEFER**, never guess.
-- `MATCHES` → leave the doc alone. No drift, no edit.
+Confidence is `high`, `medium`, or `low`. Only high-confidence `STALE`, `WRONG`, or explicitly scoped
+`MISSING` findings may become edits. A fresh reviewer must reproduce the evidence after editing.
+
+## Dry-run report
+
+For every repository, report:
+
+- pinned default branch and commit;
+- documentation examined and tools available;
+- each finding with affirmative evidence or the reason it is `UNKNOWN`;
+- proposed file-level edits without applying them;
+- deferred and blocked items;
+- whether APPLY or OPEN-PRS would be required next.
+
+The report must state that no tracked or state files, commits, pushes, or PRs were created. It must also
+report whether temporary audit storage was removed or preserved for an actionable finding. It is not a PR
+and must not include fake links or unresolved placeholder entries.

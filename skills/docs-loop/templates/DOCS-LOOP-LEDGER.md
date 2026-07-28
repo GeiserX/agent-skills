@@ -1,33 +1,42 @@
-# DOCS-LOOP LEDGER — scope: {{SCOPE}}
+# DOCS-LOOP LEDGER
 
-> The outer loop's memory AND its stop signal. The `Status` column is the resume tracker: a run continues at
-> the first repo whose status is NOT in {DONE, DEFERRED, SKIPPED}. Never re-audit a DONE repo (idempotent).
-> This file is append-only for the repo rows — never delete a row; only advance its status.
+> Frozen finite worklist and resume state. Append repository rows once, then update status and evidence in
+> place. Process every row; do not extrapolate from clean repositories.
 
-## Loop state (update at every repo boundary)
+## Run
 
+- state format: 1
 - scope: {{SCOPE}}
-- repos_total: {{N}}
-- repos_done: 0 / {{N}}
-- plateau_repos: 0 / 3     <!-- consecutive repos where the audit found NOTHING above θ worth editing -->
-- θ (per-edit ROI gate): {{THETA}}
-- started: {{DATE}}
+- canonical scope fingerprint: {{SCOPE_FINGERPRINT}}
+- mode: {{MODE}}
+- state directory: {{STATE_DIR}}
+- started: {{STARTED_AT}}
+- repositories: {{REPO_COUNT}}
+- result: IN-PROGRESS
 
-## Repos
+## Repositories
 
-| # | Repo | Canonical path | Priority | Status | Docs touched | PR / commit link |
-|---|------|----------------|:--------:|:------:|:------------:|------------------|
-| 1 | {{REPO}} | ~/repos/neutral/{{REPO}} | active | PENDING | – | – |
+| # | Canonical repository path | Remote | Default branch | Base commit | Branch | Worktree | Status | Deliverable / reason |
+|---:|---|---|---|---|---|---|---|---|
 
-<!--
-Status vocab:
-  PENDING     → not yet audited (the unread flag)
-  IN-PROGRESS → currently in the audit→ship cycle
-  DONE        → confident edits shipped as a PR (link filled) OR audited clean (no drift → no PR)
-  DEFERRED    → whole repo blocked on a human-only call (see DOCS-LOOP-DEFERRED.md)
-  SKIPPED     → archived / no local clone / worktree-only / out of scope (reason in Docs-touched cell)
-  BLOCKED     → push 403 / CI red / branch-protection needs an unavailable review
+<!-- Add exactly one row per frozen repository. Do not add example or placeholder repository rows. -->
 
-plateau_repos: +1 when a repo needed zero edits above θ; reset to 0 when a repo needed an edit.
-Halt when all rows are DONE/DEFERRED/SKIPPED (SUCCESS) or plateau_repos ≥ 3 (diminishing returns).
--->
+## Status contract
+
+- `PENDING`: frozen but not selected.
+- `IN-PROGRESS`: selected and currently being processed.
+- `DONE`: the authorized mode's deliverable completed with no unresolved candidate.
+- `DEFERRED`: auditing completed, but one or more candidates require evidence or human intent.
+- `SKIPPED`: duplicate, non-repository, instruction-excluded, or archived/read-only.
+- `BLOCKED`: safety, authentication, permission, default-branch, scan, verification, push, PR, or CI failure.
+
+Only `PENDING` may be selected. Resume `IN-PROGRESS` from its recorded worktree or mark it `BLOCKED` when
+safe recovery is impossible. All other statuses are terminal.
+
+## Result contract
+
+- `SUCCESS`: all in-scope rows are `DONE` or benignly `SKIPPED`; none are deferred or blocked.
+- `BLOCKED`: no row is `DONE` and at least one row is `BLOCKED`.
+- `PARTIAL`: otherwise, any row or finding is `DEFERRED` or `BLOCKED`.
+
+Any `BLOCKED` row prevents `SUCCESS`.

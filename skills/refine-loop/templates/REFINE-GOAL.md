@@ -1,10 +1,22 @@
 # REFINE GOAL
 
-**Target:** {{TARGET}}
-**Depth (θ):** {{THETA}}   _(lower = go deeper; correctness/security must-fixes ignore θ)_
-**Focus:** {{FOCUS}}   _(all four lenses, or one of: architecture / usability / production / security)_
+- **State format:** 1
+- **Target:** {{TARGET}}
+- **State directory:** `{{STATE_DIR}}`
+- **Canonical repository root:** `{{CANONICAL_REPOSITORY_ROOT}}`
+- **Git common directory:** `{{GIT_COMMON_DIR}}`
+- **Focus:** {{FOCUS}}
+- **theta:** 2.0
+- **plateau_limit:** 3
+- **max_rounds:** 25
+- **failure_limit:** 3
+- **Created:** {{DATE}}
 
-_{{DATE}}_
+## Intent
 
-<!-- Verbatim statement of WHAT we are refining and HOW DEEP. No invented mission/plan. On a
-     continuation (e.g. a lowered θ), append a dated `## <date> — continuation` block, never overwrite. -->
+{{INTENT}}
+
+<!-- On initialization, replace TARGET, STATE_DIR, CANONICAL_REPOSITORY_ROOT, GIT_COMMON_DIR,
+     FOCUS, DATE, and INTENT. Replace theta only when the user explicitly configured it. Keep the
+     three numeric safety limits above otherwise.
+     On continuation, append a dated section; never overwrite prior intent. -->

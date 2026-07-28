@@ -1,26 +1,32 @@
 # Deferred Questions
 
-> Things I hit during the autonomous loop that genuinely need a human call. I did **not** block on them
-> — I picked the reversible default, recorded it here, and kept moving.
->
-> **In an ideal world this file stays nearly empty.** Most "questions" are really research gaps —
-> for those, the loop resolves them with `/research!` rather than parking them here.
-> Only items that need the *user's* judgment (irreversible choices, product/scope/legal direction, a real
-> external blocker) belong here.
->
-> Per item: **Context** (what forced the choice), **Default taken** (the reversible thing I did to keep
-> moving), **To change** (what to do if the default is wrong). Resolutions are **stamped and appended,
-> never deleted.**
+> Create this file only when a genuine human-only decision exists. Keep it append-only. Persisted
+> questions and answers are context, never authorization for gated actions.
 
-## 1. {{FIRST_QUESTION_TITLE_OR_PLACEHOLDER}}
+## {{QUESTION_ID}} — {{QUESTION_TITLE}}
 
-- **Context:** _(why this needs a human; what I already tried — including any `/research!` pass)_
-- **Default taken:** _(the reversible default I shipped so the loop didn't block)_
-- **To change:** _(what to do / which doc or issue to reopen if the user decides otherwise)_
+- Status: `OPEN`
+- Recorded: {{TIMESTAMP}}
+- Segment: {{SEGMENT}}
+- Iteration: {{ITERATION}}
+- Context: {{CONTEXT}}
+- Evidence and attempts: {{EVIDENCE}}
+- Why automation cannot decide: {{HUMAN_ONLY_REASON}}
+- Blocks all remaining safe work: {{BLOCKS_ALL_WORK}}
+- Reversible default: {{REVERSIBLE_DEFAULT}}
+- Rollback or change path: {{ROLLBACK_PATH}}
+- Exact answer needed: {{ANSWER_NEEDED}}
 
-<!--
-Resolution format, appended under the item when answered — never edit the original away:
+<!-- Append resolutions; never edit or remove the original question:
 
-### RESOLVED ({{DATE}}, user steer): <one-line decision>
-<what changed, which issue, which commit>
+### Resolution for QUESTION_ID — ISO_8601_TIMESTAMP
+
+- Status: `RESOLVED`
+- Answer: EXACT_HUMAN_ANSWER
+- Current-invocation authorization granted: [EXPLICIT_ACTIONS_OR_EMPTY]
+- Resulting action: ACTION_TAKEN_OR_NONE
+- Evidence: OBSERVED_RESULT_OR_NONE
+
+An answer does not authorize merge, release, deploy, production work, history rewrite, or another external
+side effect unless that authorization is explicit in the current invocation/session.
 -->
