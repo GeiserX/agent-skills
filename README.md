@@ -6,7 +6,7 @@ the directory name becomes its slash command.
 
 ## Skills
 
-### `/sergio-loop`
+### Goal loop: `/sergio-loop`
 
 A durable, direct goal loop for one repository. It inspects and plans, implements, verifies, and
 fresh-reviews the smallest unfinished slice without invoking nested slash commands.
@@ -33,9 +33,24 @@ fresh-reviews the smallest unfinished slice without invoking nested slash comman
 ```text
 /sergio-loop <goal>
 /sergio-loop --coordinate --max-iterations=20 <goal>
+/sergio-loop
 /sergio-loop --continue
 /sergio-loop --continue <new goal>
 ```
+
+#### How to use the goal loop
+
+1. Start a fresh Claude Code session in the target Git repository. A fresh session is required after first
+   installing the hooks so `SessionStart` can export the exact Claude session identity.
+2. Run `/sergio-loop <goal>`. The goal is stored verbatim, then the loop performs direct
+   inspect/plan → implement → verify → fresh-review iterations.
+3. The global Stop hook continues the same loop for up to eight consecutive Stop events. This is Claude
+   Code's platform cap, not a configurable skill limit.
+4. If the platform cap ends a still-active segment, run `/sergio-loop` with no new goal to resume that
+   nonterminal state. Use `--continue` only to reopen a terminal `SUCCESS`, `BLOCKED`, `BUDGET`, `ERROR`, or
+   `CANCELLED` run.
+5. The Stop hook is inert in repositories without an active goal loop and ignores other Claude sessions in
+   the same repository.
 
 ### `/refine-loop`
 
@@ -115,19 +130,68 @@ install_skill refine-loop
 install_skill docs-loop
 ```
 
-To let `sergio-loop` continue in every repository, install the inert global Stop runtime:
+To let the goal loop continue in every repository, install the inert global runtime. The installer below
+moves any existing hook files into the same timestamped backup directory used above:
 
 ```bash
-# SECURITY-REVIEW: Install the reviewed pair together; do not mix versions.
-ln -s "$PWD/runtime/sergio_loop_state.py" "$HOME/.claude/hooks/sergio_loop_state.py"
-ln -s "$PWD/runtime/sergio-loop-stop-hook.py" "$HOME/.claude/hooks/sergio-loop-stop-hook.py"
-ln -s "$PWD/runtime/sergio-loop-session-hook.py" "$HOME/.claude/hooks/sergio-loop-session-hook.py"
+# SECURITY-REVIEW: Install the reviewed runtime set together; do not mix versions.
+hook_root="$HOME/.claude/hooks"
+hook_backup_root="$HOME/.claude/hooks-backups/$(date +%Y%m%d-%H%M%S)-$$"
+mkdir -p "$hook_root" "$hook_backup_root"
+
+install_hook() {
+  local file="$1"
+  local destination="$hook_root/$file"
+
+  if [[ -e "$destination" || -L "$destination" ]]; then
+    mv "$destination" "$hook_backup_root/$file"
+  fi
+  ln -s "$PWD/runtime/$file" "$destination"
+}
+
+install_hook sergio_loop_state.py
+install_hook sergio-loop-session-hook.py
+install_hook sergio-loop-stop-hook.py
 ```
 
-Register `sergio-loop-session-hook.py` as a Claude Code `SessionStart` command hook and
-`sergio-loop-stop-hook.py` as an additional `Stop` command hook. Stops are allowed normally unless private
-global state has an active loop for the nearest repository and exact current session. Claude Code caps this
-mechanism at eight consecutive continuations.
+Merge these entries into `~/.claude/settings.json`; preserve any existing hooks such as notifications:
+
+```json
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ~/.claude/hooks/sergio-loop-session-hook.py",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ~/.claude/hooks/sergio-loop-stop-hook.py",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+The SessionStart hook binds the loop to the exact Claude session. The Stop hook reads authenticated private
+state outside the repository and blocks only for that active repository/session. Background tasks, scheduled
+wakeups, unrelated sessions, inactive repositories, malformed state, and context/auth/rate-limit failures
+are allowed to stop normally.
+
+Restart Claude Code or open a fresh session after changing `settings.json`.
 
 See the [Claude Code skills documentation](https://code.claude.com/docs/en/skills) for discovery and
 invocation details.
