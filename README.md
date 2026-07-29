@@ -115,6 +115,20 @@ install_skill refine-loop
 install_skill docs-loop
 ```
 
+To let `sergio-loop` continue in every repository, install the inert global Stop runtime:
+
+```bash
+# SECURITY-REVIEW: Install the reviewed pair together; do not mix versions.
+ln -s "$PWD/runtime/sergio_loop_state.py" "$HOME/.claude/hooks/sergio_loop_state.py"
+ln -s "$PWD/runtime/sergio-loop-stop-hook.py" "$HOME/.claude/hooks/sergio-loop-stop-hook.py"
+ln -s "$PWD/runtime/sergio-loop-session-hook.py" "$HOME/.claude/hooks/sergio-loop-session-hook.py"
+```
+
+Register `sergio-loop-session-hook.py` as a Claude Code `SessionStart` command hook and
+`sergio-loop-stop-hook.py` as an additional `Stop` command hook. Stops are allowed normally unless private
+global state has an active loop for the nearest repository and exact current session. Claude Code caps this
+mechanism at eight consecutive continuations.
+
 See the [Claude Code skills documentation](https://code.claude.com/docs/en/skills) for discovery and
 invocation details.
 
@@ -132,6 +146,8 @@ Run the validator tests:
 ```bash
 python3 -m unittest discover -s tests
 ```
+
+The suite includes the repository-agnostic global Stop runtime and cross-repository/session isolation tests.
 
 ## License
 

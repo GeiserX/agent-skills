@@ -492,6 +492,28 @@ Set K=2-3 and policy.allow_implicit_invocation.
 
         self.assertIn("non-regular-target", self.error_codes(manifest=manifest))
 
+    def test_manifest_artifact_must_resolve_to_declared_source(self) -> None:
+        self.make_skill()
+        source = self.root / "runtime/source.py"
+        other = self.root / "runtime/other.py"
+        installed = self.root / "installed/runtime.py"
+        source.parent.mkdir()
+        installed.parent.mkdir()
+        source.write_text("source\n", encoding="utf-8")
+        other.write_text("other\n", encoding="utf-8")
+        os.symlink(other, installed)
+        manifest = self.write_manifest([])
+        data = json.loads(manifest.read_text(encoding="utf-8"))
+        data["artifacts"] = [
+            {
+                "installed": str(installed.relative_to(self.root)),
+                "source": str(source.relative_to(self.root)),
+            }
+        ]
+        manifest.write_text(json.dumps(data), encoding="utf-8")
+
+        self.assertIn("artifact-source-mismatch", self.error_codes(manifest=manifest))
+
     def test_manifest_target_must_stay_beneath_allowed_root(self) -> None:
         self.make_skill()
         wrapper = self.write_skill_file(

@@ -713,6 +713,65 @@ class Validator:
                 source,
             )
         self._find_mapping_cycles(path, edges)
+        self._validate_manifest_artifacts(path, data, allowed_roots)
+
+    def _validate_manifest_artifacts(
+        self,
+        manifest: Path,
+        data: dict[str, object],
+        allowed_roots: list[Path],
+    ) -> None:
+        raw = data.get("artifacts", [])
+        if not isinstance(raw, list):
+            self.add("ERROR", manifest, 0, "invalid-artifacts", "manifest artifacts must be a list")
+            return
+        installed_seen: set[Path] = set()
+        for artifact in raw:
+            if not isinstance(artifact, dict):
+                self.add("ERROR", manifest, 0, "invalid-artifact", "artifact entries must be objects")
+                continue
+            installed = artifact.get("installed")
+            source = artifact.get("source")
+            if not isinstance(installed, str) or not isinstance(source, str):
+                self.add(
+                    "ERROR",
+                    manifest,
+                    0,
+                    "invalid-artifact",
+                    "artifact requires installed and source path strings",
+                )
+                continue
+            installed_path = self._manifest_path(manifest, installed)
+            if installed_path in installed_seen:
+                self.add(
+                    "ERROR",
+                    manifest,
+                    0,
+                    "duplicate-artifact",
+                    "installed artifact paths must be unique",
+                )
+            installed_seen.add(installed_path)
+            installed_target = self._resolve_manifest_target(
+                manifest,
+                installed,
+                allowed_roots,
+                "installed-artifact",
+                allow_final_symlink=True,
+            )
+            source_target = self._resolve_manifest_target(
+                manifest,
+                source,
+                allowed_roots,
+                "artifact-source",
+            )
+            if installed_target and source_target and installed_target[1] != source_target[1]:
+                self.add(
+                    "ERROR",
+                    manifest,
+                    0,
+                    "artifact-source-mismatch",
+                    "installed artifact must resolve exactly to its declared source",
+                )
 
     def _manifest_allowed_roots(self, path: Path, data: dict[str, object]) -> list[Path]:
         raw = data.get("allowed_roots")

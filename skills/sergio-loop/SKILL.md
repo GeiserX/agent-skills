@@ -99,7 +99,7 @@ empty array instead of omitting keys.
 `segment.json` keys:
 `format_version`, `segment`, `goal_sha256`, `started_at`, `status`, `limits`, `counters`, `next_action`,
 `persistence`. `limits` has `max_iterations`, `no_progress`, `failures`; `counters` has `iteration`,
-`no_progress`, `failures`; `persistence` has `authority`, `instance_id`, `activated_at`.
+`no_progress`, `failures`; `persistence` has `authority`, `instance_id`, `session_id`, `activated_at`.
 
 `provenance.json` keys:
 `format_version`, `canonical_repository_root`, `git_common_directory`, `initial_dirty_paths`,
@@ -153,7 +153,8 @@ Append goals verbatim. Never reinterpret old state as a new directive.
 After initialization or a valid continuation, activate exactly one persistence authority:
 
 1. If one compatible Stop-hook fallback is available, activate it and record
-   `authority="stop-hook-fallback"`.
+   `authority="stop-hook-fallback"`. The packaged
+   [global Stop-hook runtime](references/global-persistence.md) is the default implementation.
 2. Otherwise record `authority="manual-resume"`.
 3. Never invoke Ralph as a continuation adapter; selecting Ralph means leaving this workflow and running
    Ralph as the sole full execution authority.
