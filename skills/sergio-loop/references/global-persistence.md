@@ -25,3 +25,11 @@ python3 ~/.claude/hooks/sergio_loop_state.py stop --repo <CANONICAL_REPOSITORY> 
 Never edit runtime JSON directly or stack this hook with another continuation authority. The hook fails
 open for missing, malformed, expired, mismatched, context-limit, token-limit, authentication, authorization,
 OAuth, HTTP 401/403/429, and rate-limit conditions.
+
+## Re-evaluate eligibility on every resume
+
+Never trust a persistence authority recorded by an earlier run. An authority written as
+`manual-resume` because this interface was unavailable at the time will otherwise be honoured
+forever, and the loop will keep completing one iteration and stopping long after the cause is
+fixed. On every resume re-check the three installed paths and the session id, then correct the
+recorded authority before deciding how to continue.
