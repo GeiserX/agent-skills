@@ -578,6 +578,50 @@ def _safe_git_boundary(path: Path) -> tuple[Path, Path]:
     return path.parent, common
 
 
+def ownership_status(repo_root, session_id, now=None) -> dict:
+    """Why would tick() decline for this session? Read-only diagnosis; never mutates, never locks.
+
+    tick() returns the same (False, None) whether NO loop is armed for a repository or a loop IS armed
+    and belongs to somebody else, and the Stop hook allows both with suppressOutput. So losing your
+    continuation looks exactly like never having had one: the loop stops advancing and reads as the
+    assistant deciding to stop. That single ambiguity has now cost two separate agents a session each,
+    and neither could tell it apart from an uninstalled hook.
+
+    Returns a dict whose "state" is one of:
+      "none"            no slot file for this repository
+      "owned-by-other"  a slot is ACTIVE and owned by a DIFFERENT session   <- the silent killer
+      "inactive"        slot exists but is finished or expired (terminal_reason says which)
+      "capped"          this session owns it but has spent its continuations
+      "ok"              this session owns an active slot with budget left
+      "unknown"         unreadable or torn state, reported as unknown rather than guessed
+
+    Lock-free on purpose: a diagnostic must never block a hook, never contend with a live tick, and
+    never raise into a caller. Adding this does not change any decision — nothing here writes."""
+    try:
+        path = runtime_directory(create=False) / f"{_repository_key(_canonical_path(repo_root))}.json"
+        if not _path_exists_without_following(path):
+            return {"state": "none", "owner": None, "iteration": None,
+                    "max_iterations": None, "terminal_reason": None}
+        raw = json.loads(path.read_text("utf-8"))
+        info = {
+            "owner": raw.get("session_id"),
+            "iteration": raw.get("iteration"),
+            "max_iterations": raw.get("max_iterations"),
+            "terminal_reason": raw.get("terminal_reason"),
+        }
+        current = time.time() if now is None else now
+        if not raw.get("active") or current >= (raw.get("expires_at") or 0):
+            return {"state": "inactive", **info}
+        if info["owner"] != session_id:
+            return {"state": "owned-by-other", **info}
+        if (info["iteration"] or 0) >= (info["max_iterations"] or 0):
+            return {"state": "capped", **info}
+        return {"state": "ok", **info}
+    except Exception:
+        return {"state": "unknown", "owner": None, "iteration": None,
+                "max_iterations": None, "terminal_reason": None}
+
+
 def discover_repository(
     cwd: str | os.PathLike[str],
 ) -> tuple[Path, Path] | None:
