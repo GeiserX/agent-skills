@@ -55,10 +55,37 @@ the user's request or this skill.
 4. Confirm the target's baseline checks. Record pre-existing failures; do not attribute them to a
    candidate.
 5. Track an owned-path set for every candidate: only paths created or changed by this loop.
+6. **Sweep the open surface — once per segment, read-only.** Baseline check state does not stop at the
+   working tree. Skip entirely when the target has no remote or the CLI is unauthenticated. Otherwise
+   list open pull requests and issues, and for each open PR read the head commit's check rollup, the
+   review decision, and the **review threads**. Read the last few merged PRs the same way. Then:
+   - **Green means every check succeeded — nothing else.** Pending and never-ran are not green.
+   - **A check named after a reviewer reports that the review ran, not that it was clean.** So does a
+     passing review decision: a reviewer configured never to request changes cannot produce a blocking
+     decision, so that field is structurally unable to gate. Unresolved review threads are the only
+     reliable signal, and the count is merely the trigger — read the findings and judge, since nobody
+     resolves threads by hand.
+   - **Derive the version delta from the diff, not the title.** Update bots rewrite branches in place
+     and titles lag. Treat any major bump, any `0.x` minor, and anything touching a version pinned in
+     lockstep across files as human-only regardless of how green it is.
+   - Record a job that fails identically across unrelated PRs as a **baseline** failure per step 4, so
+     no later candidate is blamed for it. A gate whose own comments say its failure is the intended
+     prompt is working; never relax it.
+
+   The sweep's yield is not merges — it is in-tree, behavior-preserving defects nothing else can see: an
+   update bot whose schedule never intersects its own trigger, two bots owning one manifest, a reviewer
+   config in a repository where that reviewer has never run, a hygiene workflow a sibling has and this
+   one lacks, a workflow whose triggers never fire. Emit **at most two** of those as ordinary candidates
+   and score them normally; set confidence from a captured command, never from belief. Fix the
+   generator, not its output. A merged PR carrying unresolved security or correctness findings is a
+   critical finding about shipped code: record it and end the round.
 
 Never stash, reset, force, use `--no-verify`, bypass hooks, change Git configuration, or discard
 unrelated changes. Do not stage, commit, push, or open a pull request unless explicitly requested.
-If requested, stage or commit only owned paths and follow repository policy.
+If requested, stage or commit only owned paths and follow repository policy. The same gate covers every
+remote write — merging, closing, commenting, labelling, re-running a workflow — which a high score never
+authorizes, because score measures value and this gate measures permission. Never close a bot-maintained
+tracking issue: the bot recreates it while the record it held is lost.
 
 ## Initialize or resume state
 
