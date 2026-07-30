@@ -64,6 +64,31 @@ exact workflow against the same frozen list and validated state. OMC Ralph is a 
 workflow and does not qualify as an adapter. Without a compatible interface, progress is manually resumable
 from state files only; do not claim autonomous persistence.
 
+### The compatible interface (installed)
+
+The global Stop hook at `~/.claude/hooks/sergio-loop-stop-hook.py` is that interface. It is registered for
+every repository and stays inert unless the current repository has active state, so naming it here does not
+create a second authority. Resolve the session id as `"${SERGIO_CLAUDE_SESSION_ID:-$CLAUDE_CODE_SESSION_ID}"`
+and drive it only through the helper CLI:
+
+```text
+python3 ~/.claude/hooks/sergio_loop_state.py start  --repo <CANONICAL_REPOSITORY> --session-id "${SERGIO_CLAUDE_SESSION_ID:-$CLAUDE_CODE_SESSION_ID}" --prompt-file <MODE_0600_PROMPT_FILE> --max-iter <MIN(iterations,8)> --expires-in 21600
+python3 ~/.claude/hooks/sergio_loop_state.py status --repo <CANONICAL_REPOSITORY>
+python3 ~/.claude/hooks/sergio_loop_state.py stop   --repo <CANONICAL_REPOSITORY> --session-id "${SERGIO_CLAUDE_SESSION_ID:-$CLAUDE_CODE_SESSION_ID}" --instance-id <RECORDED_INSTANCE_ID> --reason <TERMINAL_REASON>
+```
+
+Four constraints, all load-bearing:
+
+- **The runtime overrides Stop hooks after eight consecutive blocks**, so `--max-iter` is
+  `min(planned iterations, 8)`. This removes one-stop churn; it cannot provide unbounded continuation, and
+  no configuration changes that. Never claim the loop runs forever.
+- **State is one global per-repository slot**, so only one loop may hold continuation in a repository at a
+  time. That mutual exclusion is deliberate — it is what keeps "exactly one authority" true.
+- **Requires a real git repository.** The helper resolves a canonical root and fails otherwise, so a
+  non-repository working directory falls back to manual resume.
+- **Always verify inactive status after a terminal stop.** Never edit the state file directly and never
+  reuse an old instance id.
+
 ## Deterministic status model
 
 Every frozen repository starts `PENDING`. Select only `PENDING` rows, change one to `IN-PROGRESS`, then

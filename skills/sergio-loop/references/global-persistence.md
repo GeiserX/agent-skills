@@ -11,7 +11,7 @@ other session or inactive repository stops normally.
 Start only after core state initialization succeeds:
 
 ```text
-python3 ~/.claude/hooks/sergio_loop_state.py start --repo <CANONICAL_REPOSITORY> --session-id "$SERGIO_CLAUDE_SESSION_ID" --prompt-file <MODE_0600_PROMPT_FILE> --max-iter <STOP_CONTINUATION_LIMIT> --expires-in 21600
+python3 ~/.claude/hooks/sergio_loop_state.py start --repo <CANONICAL_REPOSITORY> --session-id "${SERGIO_CLAUDE_SESSION_ID:-$CLAUDE_CODE_SESSION_ID}" --prompt-file <MODE_0600_PROMPT_FILE> --max-iter <STOP_CONTINUATION_LIMIT> --expires-in 21600
 ```
 
 Claude Code permits at most eight consecutive Stop-hook blocks, so the stop continuation limit cannot
@@ -19,7 +19,7 @@ exceed `8`. Record the returned instance ID. Stop that exact session-bound insta
 outcome:
 
 ```text
-python3 ~/.claude/hooks/sergio_loop_state.py stop --repo <CANONICAL_REPOSITORY> --session-id "$SERGIO_CLAUDE_SESSION_ID" --instance-id <RECORDED_INSTANCE_ID> --reason <TERMINAL_REASON>
+python3 ~/.claude/hooks/sergio_loop_state.py stop --repo <CANONICAL_REPOSITORY> --session-id "${SERGIO_CLAUDE_SESSION_ID:-$CLAUDE_CODE_SESSION_ID}" --instance-id <RECORDED_INSTANCE_ID> --reason <TERMINAL_REASON>
 ```
 
 Never edit runtime JSON directly or stack this hook with another continuation authority. The hook fails
