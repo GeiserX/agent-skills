@@ -2,7 +2,6 @@
 name: docs-loop
 description: Audits repository documentation against current default-branch evidence, reports stale claims, and optionally applies isolated documentation-only fixes or opens reviewable pull requests. Use only when explicitly invoked as /docs-loop.
 argument-hint: "[--apply [--open-prs]] [--state-dir=PATH] [--root=PATH | REPO_PATH ...]"
-disable-model-invocation: true
 ---
 
 # docs-loop

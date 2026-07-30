@@ -2,7 +2,6 @@
 name: sergio-loop
 description: Runs a durable inspect/plan, implement, verify, and fresh-review loop toward an explicit repository goal, with optional lease-backed coordination across sessions. Use only when the user explicitly invokes sergio-loop.
 argument-hint: "[--coordinate] [--continue] [--max-iterations=N] <goal>"
-disable-model-invocation: true
 ---
 
 # sergio-loop
