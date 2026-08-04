@@ -11,6 +11,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from sergio_loop_registration import ensure_registration
 from sergio_loop_state import StateError, validate_session_id
 
 
@@ -56,6 +57,17 @@ def _append_export(path_value: str, session_id: str) -> None:
 
 
 def main() -> int:
+    # Deliberately FIRST and in its own guard: an account rotated to mid-session carries a different
+    # settings.json, and one without the Stop hook cannot report anything at all — not even that it
+    # declined. Repairing it here is the only self-healing path, and it must not be skipped by the
+    # early return the export below takes when CLAUDE_ENV_FILE is absent. Settings are read at
+    # session start, so a repair takes effect on the NEXT session for that account, never this one.
+    # Silent on success: SessionStart output reaches the session.
+    try:
+        ensure_registration()
+    except Exception:
+        pass  # a session must still open when repair fails
+
     try:
         payload = _read_payload()
         env_file = os.environ.get("CLAUDE_ENV_FILE")
