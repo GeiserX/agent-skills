@@ -53,7 +53,9 @@ the user's request or this skill.
    paths in the worklog. Treat them as protected unless the user explicitly authorizes editing
    them.
 4. Confirm the target's baseline checks. Record pre-existing failures; do not attribute them to a
-   candidate.
+   candidate. Baseline once on a quiet machine: a broad suite run under heavy load fails on timeouts
+   that move between runs, and a shifting baseline silently converts into rolled-back candidates.
+   Re-run a suspect test alone before recording it as failing, and record the load you observed.
 5. Track an owned-path set for every candidate: only paths created or changed by this loop.
 6. **Sweep the open surface — once per segment, read-only.** Baseline check state does not stop at the
    working tree. Skip entirely when the target has no remote or the CLI is unauthenticated. Otherwise

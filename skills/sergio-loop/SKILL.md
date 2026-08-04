@@ -220,6 +220,20 @@ Run fresh focused checks, then required lint, typecheck, build, broader tests, o
 risk. Record exact commands, exit status, test counts, and relevant artifact/run identifiers. Never claim
 a check that was not run.
 
+A check reporting success is not yet evidence that it tested the change. Before trusting one:
+
+- **A backgrounded launcher's exit status is the launcher's, not the work's.** Read the command's own
+  output and its own exit code. A notification that the task finished describes the wrapper, and a
+  detached command that failed will still leave a launcher that succeeded.
+- **A green run whose covering job never ran proves nothing.** Confirm the job exercising this change
+  actually executed; a path filter, a matrix condition, or a skip makes a run green by testing nothing.
+  A suspiciously fast pass is usually this.
+- **A gate this machine cannot run is uninformative here, in both directions.** When the local toolchain
+  cannot build or test the target at all, neither local success nor local failure says anything; verify
+  where the gate genuinely runs, and record where that was.
+- **Failures that vary between identical runs are load, not regressions.** Re-run the suspect test alone
+  before believing it, and record machine load whenever a broad local suite disagrees with CI.
+
 ### D. Fresh review
 
 Review the complete resulting diff against the current goal, repository rules, security, correctness,
