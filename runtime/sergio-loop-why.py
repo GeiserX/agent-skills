@@ -30,10 +30,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from sergio_loop_state import (  # noqa: E402
     discover_repository,
     ownership_status,
+    pointer_path,
     runtime_directory,
 )
-
-POINTER = Path.home() / ".claude" / "sergio-loop-session-repo.json"
 TRACE = Path.home() / ".claude" / "sergio-loop-hook-debug.jsonl"
 
 # What each state means and what to actually DO about it. The original failures were not caused by a
@@ -57,7 +56,7 @@ ADVICE = {
 
 def _pointer_for(session_id):
     try:
-        return json.loads(POINTER.read_text("utf-8")).get(session_id)
+        return json.loads(pointer_path().read_text("utf-8")).get(session_id)
     except Exception:
         return None
 

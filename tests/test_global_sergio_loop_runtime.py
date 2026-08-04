@@ -304,15 +304,119 @@ class GlobalSergioLoopRuntimeTests(unittest.TestCase):
         self.assertEqual(2, cli_result.returncode)
         self.assertEqual(0, self.read_state()["iteration"])
 
-    def test_background_tasks_and_session_crons_allow_without_tick(self) -> None:
+    BLOCK = {"decision": "block", "reason": "Continue the verified task."}
+
+    def test_listed_background_work_no_longer_latches_the_loop_off(self) -> None:
+        """Merely LISTED work must not end the loop — only a human deciding to should.
+
+        The gate this replaces allowed the stop whenever the payload carried any background task or
+        cron. Both keep being reported after the work is over, and a task the runtime never reaps
+        reports a running status forever, so one backgrounded command disabled continuation for the
+        rest of the session — silently, and indistinguishably from an uninstalled hook. All three
+        shapes below (bare entry, explicitly finished entry, cron map) must still continue.
+        """
         self.start_loop()
 
-        background, _ = self.run_stop_hook(extra={"background_tasks": ["task"]})
-        crons, _ = self.run_stop_hook(extra={"session_crons": {"cron": "active"}})
+        for extra in (
+            {"background_tasks": ["task"]},
+            {"background_tasks": [{"id": "t", "status": "completed"}]},
+            {"session_crons": {"cron": "active"}},
+        ):
+            result, output = self.run_stop_hook(extra=extra)
+            self.assertEqual(0, result.returncode, result.stderr.decode())
+            self.assertEqual(self.BLOCK, output, f"listed work must not stop the loop: {extra}")
 
-        self.assert_allow(background)
-        self.assert_allow(crons)
+        self.assertEqual(3, self.read_state()["iteration"])
+
+    def test_start_binds_the_session_to_its_repository_and_stop_clears_it(self) -> None:
+        """The binding must be WRITTEN by arming.
+
+        It was read by two runtime scripts and written by nothing, so the workspace-parent fallback
+        below fired only when some earlier session happened to have written the file by hand.
+        """
+        started = self.start_loop()
+        pointers = json.loads(state_runtime.pointer_path().read_text(encoding="utf-8"))
+        self.assertEqual(os.fspath(self.repo), pointers.get("session-a"))
+
+        state_runtime.stop(self.repo, started["instance_id"], "success", "session-a")
+
+        pointers = json.loads(state_runtime.pointer_path().read_text(encoding="utf-8"))
+        self.assertNotIn(
+            "session-a", pointers, "a terminated loop must not stay resurrectable by its binding"
+        )
+
+    def test_a_workspace_parent_cwd_continues_through_the_binding(self) -> None:
+        """A cwd that merely CONTAINS the repositories is inside none of them.
+
+        Discovery therefore finds nothing and the loop could never continue, however much live state
+        it had — the exact silent stop this fallback exists for.
+        """
+        self.start_loop()
+        self.assertIsNone(
+            state_runtime.discover_repository(os.fspath(self.root)),
+            "precondition: the workspace parent must not itself be a repository",
+        )
+
+        result, output = self.run_stop_hook(cwd=self.root)
+
+        self.assertEqual(0, result.returncode, result.stderr.decode())
+        self.assertEqual(self.BLOCK, output)
+        self.assertEqual(1, self.read_state()["iteration"])
+
+    def test_a_cwd_in_an_unlooped_repository_still_continues_its_bound_loop(self) -> None:
+        """Discovery SUCCEEDING is not enough: it can resolve to a repository that has no loop.
+
+        A shared workspace — several repositories under one parent, one loop slot per repository —
+        would otherwise stop silently, because the binding was consulted only when discovery failed.
+        """
+        other = self.make_repo("other")
+        self.start_loop()
+
+        result, output = self.run_stop_hook(cwd=other)
+
+        self.assertEqual(self.BLOCK, output)
+        self.assertEqual(1, self.read_state()["iteration"])
+
+    def test_a_binding_never_reaches_down_into_a_nested_repository(self) -> None:
+        """The binding must not resurrect the parent-state hijack the nearest-repository rule forbids.
+
+        Arming binds the session to the OUTER repository, which is ordinary. A later turn whose cwd is
+        inside a repository nested within it must still be governed by that nested repository — the
+        fallback is for repositories discovery cannot reach, never a way back to an enclosing one.
+        (The sibling case above proves the fallback still works where it should.)
+        """
+        self.start_loop()
+        nested = self.make_repo("repo/nested")
+        deeper = nested / "deeper"
+        deeper.mkdir()
+
+        result, _ = self.run_stop_hook(cwd=deeper)
+
+        self.assert_allow(result)
         self.assertEqual(0, self.read_state()["iteration"])
+
+    def test_a_binding_never_continues_another_sessions_loop(self) -> None:
+        """The fallback must not become a way for any session to drive a loop it does not own."""
+        self.start_loop(session_id="session-a")
+
+        result, _ = self.run_stop_hook(cwd=self.root, session_id="session-b")
+
+        self.assert_allow(result)
+        self.assertEqual(0, self.read_state()["iteration"])
+
+    def test_bindings_are_bounded(self) -> None:
+        """A home directory lives for years; the map must not grow without limit."""
+        for index in range(state_runtime.MAX_POINTER_ENTRIES + 5):
+            state_runtime.bind_session_repository(f"session-{index}", self.repo)
+
+        pointers = json.loads(state_runtime.pointer_path().read_text(encoding="utf-8"))
+        self.assertEqual(state_runtime.MAX_POINTER_ENTRIES, len(pointers))
+        self.assertNotIn("session-0", pointers, "the oldest binding must be evicted first")
+        self.assertIn(
+            f"session-{state_runtime.MAX_POINTER_ENTRIES + 4}",
+            pointers,
+            "the most recently armed session must survive",
+        )
 
     def test_stop_and_expiry_clear_prompt_atomically(self) -> None:
         started = self.start_loop(session_id="owner")

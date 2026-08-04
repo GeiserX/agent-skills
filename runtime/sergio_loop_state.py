@@ -27,6 +27,10 @@ RUNTIME_DIRECTORY_ENV = "SERGIO_LOOP_RUNTIME_DIR"
 DEFAULT_RUNTIME_DIRECTORY = "~/.claude/sergio-loop-runtime"
 MAX_PROMPT_BYTES = 64 * 1024
 MAX_STATE_BYTES = 128 * 1024
+# Session→repository bindings (see pointer_path). One entry per armed session; bounded so a
+# long-lived home directory cannot grow the file without limit.
+POINTER_FILENAME = "sergio-loop-session-repo.json"
+MAX_POINTER_ENTRIES = 64
 MAX_REASON_BYTES = 4 * 1024
 MAX_SESSION_ID_BYTES = 256
 MAX_GIT_FILE_BYTES = 4 * 1024
@@ -144,6 +148,94 @@ def state_path_for(repo_root: Path) -> Path:
 
 def lock_path_for(repo_root: Path) -> Path:
     return runtime_directory(create=False) / f"{_repository_key(_canonical_path(repo_root))}.lock"
+
+
+def pointer_path() -> Path:
+    """Where session→repository bindings live.
+
+    The Stop payload carries a session's cwd and the loop is discovered from it. A session opened at
+    a workspace PARENT — a directory that merely contains the repositories, which is ordinary — is
+    inside no repository at all, so discovery finds nothing and the loop can never continue however
+    much live state it has. These bindings are the explicit fallback.
+
+    Isolated by the runtime-directory override so a test can never write the operator's real
+    bindings, and the historical location otherwise, because sessions already armed reference it.
+    Kept as ONE function because the same literal previously appeared in two runtime scripts, and a
+    reader and a writer that disagree about the path is the same bug as having no writer at all.
+    """
+    configured = os.environ.get(RUNTIME_DIRECTORY_ENV)
+    if configured:
+        return _lexical_absolute_path(configured) / POINTER_FILENAME
+    return _lexical_absolute_path("~/.claude") / POINTER_FILENAME
+
+
+def _read_pointers() -> dict[str, Any]:
+    """Current bindings, or an empty map. Never raises: a corrupt file must not break arming."""
+    path = pointer_path()
+    try:
+        if not _assert_regular_path(path, allow_missing=True):
+            return {}
+        raw = _read_regular_file(path, MAX_STATE_BYTES)
+        entries = json.loads(raw.decode("utf-8"))
+    except (OSError, ValueError, StateError):
+        return {}
+    return entries if isinstance(entries, dict) else {}
+
+
+def _write_pointers(entries: dict[str, Any]) -> None:
+    """Replace the bindings atomically. Never raises — a binding is a fallback, not the loop."""
+    path = pointer_path()
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        encoded = (
+            json.dumps(entries, sort_keys=True, separators=(",", ":"), ensure_ascii=False) + "\n"
+        ).encode("utf-8")
+        if len(encoded) > MAX_STATE_BYTES:
+            return
+        temporary = path.with_name(f".{path.name}.{uuid.uuid4().hex}.tmp")
+        flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+        if hasattr(os, "O_NOFOLLOW"):
+            flags |= os.O_NOFOLLOW
+        descriptor = os.open(temporary, flags, 0o600)
+        try:
+            os.fchmod(descriptor, 0o600)
+            _write_all(descriptor, encoded)
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
+        os.replace(temporary, path)
+    except OSError:
+        try:
+            os.unlink(temporary)  # type: ignore[possibly-undefined]
+        except (OSError, NameError):
+            pass
+
+
+def bind_session_repository(session_id: str, repo_root: Path) -> None:
+    """Record that `session_id` drives the loop in `repo_root`.
+
+    Called when the loop is ARMED, which is the only moment both facts are known together. Before
+    this, the binding existed as a file two scripts read and nothing ever wrote — the workspace-parent
+    fallback therefore fired only when some earlier session happened to have written it by hand.
+
+    Bounded: the map is trimmed to the most recent entries so a long-lived home directory cannot grow
+    it without limit. Never raises.
+    """
+    entries = _read_pointers()
+    entries[session_id] = os.fspath(repo_root)
+    if len(entries) > MAX_POINTER_ENTRIES:
+        # Keep the newest by insertion order; dicts preserve it and rewriting an existing session
+        # re-inserts it at the end, so the survivors are the sessions most recently armed.
+        for stale in list(entries)[: len(entries) - MAX_POINTER_ENTRIES]:
+            entries.pop(stale, None)
+    _write_pointers(entries)
+
+
+def unbind_session(session_id: str) -> None:
+    """Drop a session's binding when its loop ends, so a dead loop is never resurrected by it."""
+    entries = _read_pointers()
+    if entries.pop(session_id, None) is not None:
+        _write_pointers(entries)
 
 
 def _assert_regular_path(
@@ -472,6 +564,9 @@ def start(
             "terminal_reason": None,
         }
         _atomic_write_state(path, state)
+    # Outside the lock and deliberately non-fatal: the binding is a discovery FALLBACK, so failing
+    # to record it must never fail an otherwise-armed loop.
+    bind_session_repository(session_id, root)
     return _public_state(state)
 
 
@@ -528,6 +623,9 @@ def stop(
             changed = True
         if changed:
             _atomic_write_state(path, state)
+    # The loop is over, so drop the binding: a surviving entry would let a LATER turn of this same
+    # session continue a loop that has already terminated.
+    unbind_session(session_id)
     return _public_state(state)
 
 
