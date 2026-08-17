@@ -35,8 +35,17 @@ MAX_REASON_BYTES = 4 * 1024
 MAX_SESSION_ID_BYTES = 256
 MAX_GIT_FILE_BYTES = 4 * 1024
 MAX_EXPIRY_SECONDS = 7 * 24 * 60 * 60
-# Claude permits at most eight consecutive Stop-hook block continuations.
-MAX_STOP_CONTINUATIONS = 8
+# The loop's whole ceiling: 8 originally, 100 on 2026-08-13, 1000 on 2026-08-17 ("from 100 to
+# 1000 by default"). Every other cap derives from this constant — DEFAULT_MAX_ITERATIONS,
+# MAX_ITERATIONS, the clamp in `start`, and the re-clamp applied to existing state on normalize —
+# so this one line is the only place to change it.
+#
+# Two things it does NOT govern, and both have ended runs that still had iterations to spare:
+#   - the expiry (`--expires-in`, 6h by default, capped by MAX_EXPIRY_SECONDS). A run that stops
+#     with terminal_reason "expired" ran out of TIME, and raising this number does nothing for it.
+#   - Claude Code's own runtime, which may stop honouring a Stop hook after its own number of
+#     consecutive blocks. This constant is the loop's budget, not the runtime's.
+MAX_STOP_CONTINUATIONS = 1000
 DEFAULT_MAX_ITERATIONS = MAX_STOP_CONTINUATIONS
 MAX_ITERATIONS = MAX_STOP_CONTINUATIONS
 GIT_TIMEOUT_SECONDS = 15
