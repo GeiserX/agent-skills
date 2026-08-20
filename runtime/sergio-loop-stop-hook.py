@@ -41,7 +41,9 @@ DEBUG_PATH = Path.home() / ".claude" / "sergio-loop-hook-debug.jsonl"
 
 
 def _trace(stage: str, payload: object = None) -> None:
-    """Record WHY a stop was allowed, so a silent no-continue is diagnosable after the fact.
+    """Record every decision — WHY a stop was allowed, and that a grant happened — so a silent
+    no-continue is diagnosable after the fact and a grant is a fact in the log, not an inference
+    from the slot counter.
 
     A hook that fails open leaves no trace by construction: the loop simply stops and every piece of
     state still looks healthy, which has now cost several wrong diagnoses. Probing the hook by hand
@@ -272,6 +274,11 @@ def main() -> int:
             _trace("allow:tick-declined", payload)
             _allow()
             return 0
+        # Grants are traced too. They used to leave no trace by construction — _trace ran only on allow
+        # paths — so "did the hook grant here?" was answerable only by inference from the slot counter,
+        # which has already cost wrong diagnoses. Same shape-only record as every other row: stage, key
+        # names, cwd, session id. Never the prompt text.
+        _trace("block:granted", payload)
         sys.stdout.write(
             json.dumps(
                 {"decision": "block", "reason": prompt},

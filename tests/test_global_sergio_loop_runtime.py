@@ -92,18 +92,22 @@ class GlobalSergioLoopRuntimeTests(unittest.TestCase):
         camel_case_session: bool = False,
         extra: dict[str, object] | None = None,
         raw: bytes | None = None,
+        env_overrides: dict[str, str] | None = None,
     ) -> tuple[subprocess.CompletedProcess[bytes], dict[str, object] | None]:
         payload: dict[str, object] = {"cwd": os.fspath(cwd or repo or self.repo)}
         if session_id is not None:
             payload["sessionId" if camel_case_session else "session_id"] = session_id
         if extra:
             payload.update(extra)
+        env = os.environ.copy()
+        if env_overrides:
+            env.update(env_overrides)
         result = subprocess.run(
             [sys.executable, os.fspath(STOP_HOOK_SCRIPT)],
             input=raw if raw is not None else json.dumps(payload).encode(),
             capture_output=True,
             timeout=10,
-            env=os.environ.copy(),
+            env=env,
         )
         output = json.loads(result.stdout) if result.stdout else None
         return result, output
@@ -214,6 +218,32 @@ class GlobalSergioLoopRuntimeTests(unittest.TestCase):
         self.assertEqual("session-a", state["session_id"])
         self.assertEqual(1, state["iteration"])
 
+    def test_a_grant_writes_a_debug_row_and_a_decline_still_does(self) -> None:
+        # Grants used to leave no trace by construction — _trace ran only on allow paths — so a healthy
+        # grant and a silent failure read identically from the log, and "did the hook grant here?" was
+        # answerable only by inference from the slot counter. Both directions are facts in the log now.
+        self.start_loop(session_id="session-a")
+        fake_home = self.root / "home"
+        (fake_home / ".claude").mkdir(parents=True)
+        result, output = self.run_stop_hook(env_overrides={"HOME": os.fspath(fake_home)})
+        self.assertEqual(0, result.returncode)
+        self.assertEqual("block", (output or {}).get("decision"))
+        debug = fake_home / ".claude" / "sergio-loop-hook-debug.jsonl"
+        rows = [json.loads(line) for line in debug.read_text().splitlines()]
+        grants = [r for r in rows if r.get("stage") == "block:granted"]
+        self.assertEqual(1, len(grants))
+        self.assertEqual(os.fspath(self.repo), grants[0].get("cwd"))
+        self.assertEqual("session-a", grants[0].get("payload_session"))
+        # The record is SHAPE only — the prompt text must never reach the log.
+        self.assertNotIn("Continue the verified task", debug.read_text())
+        # The control: a declined stop still writes its allow row to the same file.
+        result2, _ = self.run_stop_hook(
+            session_id="session-b", env_overrides={"HOME": os.fspath(fake_home)}
+        )
+        self.assert_allow(result2)
+        rows2 = [json.loads(line) for line in debug.read_text().splitlines()]
+        self.assertTrue(any(r.get("stage") == "allow:tick-declined" for r in rows2))
+
     def test_active_replacement_rejected_and_expiry_clamped(self) -> None:
         first = self.start_loop(expires_in=state_runtime.MAX_EXPIRY_SECONDS * 2)
         self.assertEqual(
@@ -265,7 +295,11 @@ class GlobalSergioLoopRuntimeTests(unittest.TestCase):
         self.assertEqual("block", output["decision"])
 
     def test_eight_blocks_then_ninth_allows_and_clears_prompt(self) -> None:
-        started = self.start_loop(max_iter=500)
+        # An EXPLICIT budget of 8. This used to request 500 and assert the clamp to the old cap of 8;
+        # when the cap moved (8 → 100 → 1000) the 500 sailed through and the ninth tick blocked instead
+        # of allowing. The clamp behaviour is pinned in test_cli_lifecycle_requires_session_id against
+        # the runtime's own constant — this test is about EXHAUSTION semantics, at any budget.
+        started = self.start_loop(max_iter=8)
         self.assertEqual(8, started["max_iterations"])
 
         results = [self.run_stop_hook()[0] for _ in range(9)]
@@ -613,7 +647,7 @@ class GlobalSergioLoopRuntimeTests(unittest.TestCase):
                 "--session-id",
                 "owner",
                 "--max-iter",
-                "99",
+                str(state_runtime.MAX_STOP_CONTINUATIONS + 1),
             ],
             check=True,
             capture_output=True,
@@ -622,7 +656,10 @@ class GlobalSergioLoopRuntimeTests(unittest.TestCase):
             env=os.environ.copy(),
         )
         started = json.loads(start.stdout)
-        self.assertEqual(8, started["max_iterations"])
+        # The PIN is the clamp, derived from the runtime's own cap. It was the literal 8, which went
+        # stale the day the cap moved (8 → 100 → 1000) and left this suite red while the runtime was
+        # fine — a hardcoded twin of a constant that lives one import away.
+        self.assertEqual(state_runtime.MAX_STOP_CONTINUATIONS, started["max_iterations"])
 
         stopped = subprocess.run(
             [
@@ -649,7 +686,9 @@ class GlobalSergioLoopRuntimeTests(unittest.TestCase):
         self.assertEqual("", self.read_state()["prompt"])
 
     def test_concurrent_hooks_never_over_tick(self) -> None:
-        self.start_loop()
+        # Budget 8 explicitly — the arithmetic below (8 racers, top-up to 8, ninth allows) assumed the
+        # old DEFAULT of 8, which the cap raise silently changed to 1000.
+        self.start_loop(max_iter=8)
 
         def invoke(_: int) -> subprocess.CompletedProcess[bytes]:
             return self.run_stop_hook()[0]
