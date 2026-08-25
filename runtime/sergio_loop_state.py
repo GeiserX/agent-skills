@@ -45,7 +45,7 @@ MAX_EXPIRY_SECONDS = 7 * 24 * 60 * 60
 #     with terminal_reason "expired" ran out of TIME, and raising this number does nothing for it.
 #   - Claude Code's own runtime, which may stop honouring a Stop hook after its own number of
 #     consecutive blocks. This constant is the loop's budget, not the runtime's.
-MAX_STOP_CONTINUATIONS = 1000
+MAX_STOP_CONTINUATIONS = 10000
 DEFAULT_MAX_ITERATIONS = MAX_STOP_CONTINUATIONS
 MAX_ITERATIONS = MAX_STOP_CONTINUATIONS
 GIT_TIMEOUT_SECONDS = 15
