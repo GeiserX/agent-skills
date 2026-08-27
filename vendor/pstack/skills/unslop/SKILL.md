@@ -1,6 +1,6 @@
 ---
 name: unslop
-description: Cut AI tells from any writing. Must always apply.
+description: Cut AI tells from any writing. Never removes links, and adds them where the text names something clickable. Must always apply.
 ---
 
 # Unslop
@@ -12,7 +12,8 @@ Edit text to remove AI patterns and add human voice.
 1. Scan for the patterns below.
 2. Rewrite. Preserve meaning, match intended tone.
 3. Add soul (see next section).
-4. Self-audit: "What makes this obviously AI generated?" Fix remaining tells.
+4. Link pass. Confirm every link that went in came out, then add links for anything the text names that the reader could click. See "Links".
+5. Self-audit: "What makes this obviously AI generated?" Fix remaining tells. Then count the links and compare against the original. The count must never have gone down.
 
 ## Adding soul
 
@@ -24,6 +25,17 @@ Removing patterns is half the job. Sterile, voiceless writing is just as obvious
 - **Use "I" when it fits.** First person isn't unprofessional.
 - **Let some mess in.** Perfect structure feels algorithmic.
 - **Be specific.** Not "this is concerning" but "there's something unsettling about agents churning away at 3am."
+
+## Links
+
+Unslop cuts words. It never cuts links. Every other rule here is about removing something, so this is the one section that protects and adds.
+
+- **Never remove a link.** Not from prose, not from a heading, not from a bullet, not from a table cell. If a sentence has to be rewritten, carry the link into the rewrite. A link is what makes a claim checkable, so dropping it costs the reader more than any tell you removed.
+- **Never downgrade a link to bare text.** A link labelled `the runner policy` pointing at `docs/ci-runners.md` must not come back as the words "the runner policy" with nothing behind them. Reword the label freely, keep the target.
+- **Add a link when the text already names something linkable.** If the prose mentions another doc, a file, a script, an issue, or a PR that the reader can reach, make it clickable. A bare mention of `docs/INDEX.md` becomes a link to `docs/INDEX.md`. "the mac mini onboarding guide" becomes a link to that file. "issue 1585" becomes a link to it. Nobody should have to go hunting for a thing the doc just named.
+- **Prefer relative link targets inside a repo**, so they survive a branch, a fork, and a private mirror. Point at `../neutral-hardware/docs/mac-mini-onboarding.md`, not a github.com URL pinned to one branch.
+- **Only link what you verified exists.** Check the path, the issue number, the anchor. A confident link to a file that isn't there is worse than plain text, because it looks checked.
+- **Link once, at first mention.** Do not turn every noun into a link. Repeating the same link five times in a section is its own kind of noise.
 
 ## Patterns to detect and fix
 
