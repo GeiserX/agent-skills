@@ -14,7 +14,7 @@ investigation, a research question or a change across independent agents.
 
 ## Features
 
-- `/investigate`, `/review-pr`, `/review-code`, `/research` and `/implement` split the work across independent agents running in parallel, scaled to the size of the task, and check every finding before acting on it.
+- `/investigate`, `/review-pr`, `/review-code`, `/research` and `/implement` split the work across parallel agents, scaled to the size of the task, and check every finding before acting on it.
 - `/sergio-loop` runs a durable goal loop in one repository, one small slice at a time, with goals and evidence in `docs/` and resumable state in `.omc/sergio-loop/`.
 - An optional global Stop hook continues the loop in the same session and stays inert everywhere else.
 - `/refine-loop` makes small, behavior-preserving improvements ranked by `ROI = Impact × Confidence ÷ Effort`, one per round, each checked by a fresh reviewer.
