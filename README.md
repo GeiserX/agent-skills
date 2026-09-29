@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/GeiserX/claude-skills/main/docs/images/banner.svg" alt="claude-skills" width="100%">
+</p>
+
 # claude-skills
 
 Canonical, generic [Claude Code](https://claude.com/claude-code) skills for durable repository
