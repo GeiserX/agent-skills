@@ -1,12 +1,12 @@
 <p align="center">
-  <img src="docs/images/banner.svg" alt="claude-skills" width="100%">
+  <img src="docs/images/banner.svg" alt="agent-skills" width="100%">
 </p>
 
 <p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/GeiserX/claude-skills?style=flat-square" alt="License"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/GeiserX/agent-skills?style=flat-square" alt="License"></a>
 </p>
 
-# claude-skills
+# agent-skills
 
 Skills for [Claude Code](https://claude.com/claude-code) and [Codex](https://developers.openai.com/codex).
 The durable loops drive a repository toward a goal. The parallel skills split a review, an
@@ -22,12 +22,13 @@ the shared `SKILL.md` format: `skills/` holds the Claude Code copies and `codex/
 - `/refine-loop` makes small, behavior-preserving improvements ranked by `ROI = Impact × Confidence ÷ Effort`, one per round, each checked by a fresh reviewer.
 - `/docs-loop` audits documentation against the default branch, as a dry run, with staged edits, or with one pull request per repository. It never merges.
 - None of them treats a stored goal as permission to merge, publish or deploy.
+- `/kb-research` and `/kb-review` answer and review from your team's own record, through one adapter file you fill in for whatever knowledge base you have.
 - A validator checks every skill package, and checks each loop against the shared loop contract.
 
 ## Quick start
 
 ```bash
-git clone https://github.com/GeiserX/claude-skills.git && cd claude-skills
+git clone https://github.com/GeiserX/agent-skills.git && cd agent-skills
 mkdir -p ~/.claude/skills && ln -s "$PWD/skills/sergio-loop" ~/.claude/skills/sergio-loop
 ```
 
@@ -40,6 +41,13 @@ Then run `/sergio-loop <goal>` in a fresh Claude Code session. If a skill of the
 - [Skills](docs/skills.md): what each skill does, its defaults and invocations, and how to use the goal loop and the parallel skills
 - [Installation](docs/installation.md): the skill and hook installers, `settings.json` entries, canonical sources and local overlays
 - [Development](docs/development.md): validating the skill packages and running the tests
+
+## Other people's skills
+
+`vendor/` holds skills written by other people, kept here as pinned snapshots with their licences. They are not installed by default; link the ones you want the same way as the others.
+
+- [pstack](https://github.com/cursor/plugins/tree/main/pstack) by Lauren Tan (MIT), 52 skills such as `unslop`, `blast-radius` and `show-me-your-work`, taken from Michael Denyer's [Claude Code port](https://github.com/michael-denyer/pstack-claude). Sources, commits and local changes are in [vendor/pstack/PROVENANCE.md](vendor/pstack/PROVENANCE.md).
+- `writing-for-agents` from Matt Pocock's [skills](https://github.com/mattpocock/skills) (MIT). See [vendor/mattpocock-skills/PROVENANCE.md](vendor/mattpocock-skills/PROVENANCE.md).
 
 ## License
 
