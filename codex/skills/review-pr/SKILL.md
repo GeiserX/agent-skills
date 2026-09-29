@@ -14,8 +14,8 @@ This is the Codex copy of this skill. Read the rest of it with these translation
   `~/.codex/agents/` sets `model` and `model_reasoning_effort`. An agent without a role runs on the
   session's model.
 - A slash command such as `/name`: mention the skill as `$name`.
-- Claude Code hooks (Stop, SessionStart) and `.claude/` paths: Codex has neither. A loop runs one pass
-  per invocation, saves its state and reports how to resume.
+- This repository's hooks and `.claude/` paths are for Claude Code only, and nothing here installs a Codex
+  hook. A loop runs one pass per invocation, saves its state and reports how to resume.
 - `CLAUDE.md`: also read `AGENTS.md`, which is the file Codex loads.
 
 # review-pr
