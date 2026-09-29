@@ -49,6 +49,51 @@ class CodexMirrorTests(unittest.TestCase):
             shutil.copytree(skills / "research", skills / "research-two")
             self.assertEqual(build_codex.check(skills, codex), ["missing in codex/skills: research-two"])
 
+    def _built(self, tmp: str) -> tuple[Path, Path]:
+        skills, codex = Path(tmp) / "skills", Path(tmp) / "codex"
+        shutil.copytree(REPO / "skills", skills)
+        build_codex.build(skills, codex)
+        return skills, codex
+
+    def test_check_fails_when_a_codex_file_changes_type(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            skills, codex = self._built(tmp)
+            target = codex / "research" / "SKILL.md"
+            content = target.read_bytes()
+            target.unlink()
+            target.mkdir()
+            self.assertEqual(build_codex.check(skills, codex), ["differs: research/SKILL.md"])
+            target.rmdir()
+            elsewhere = Path(tmp) / "same-bytes.md"
+            elsewhere.write_bytes(content)
+            target.symlink_to(elsewhere)
+            self.assertEqual(build_codex.check(skills, codex), ["differs: research/SKILL.md"])
+            target.unlink()
+            target.symlink_to("/nonexistent/target")
+            self.assertEqual(build_codex.check(skills, codex), ["differs: research/SKILL.md"])
+
+    def test_check_fails_when_the_executable_bit_changes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            skills, codex = self._built(tmp)
+            (codex / "research" / "SKILL.md").chmod(0o755)
+            self.assertEqual(build_codex.check(skills, codex), ["differs: research/SKILL.md"])
+
+    def test_a_relative_symlink_in_a_skill_ships_as_its_content(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            shutil.copytree(REPO / "skills" / "research", root / "skills" / "research")
+            (root / "shared").mkdir()
+            (root / "shared" / "note.md").write_text("shared note\n")
+            (root / "skills" / "research" / "note.md").symlink_to("../../shared/note.md")
+            build_codex.build(root / "skills", root / "codex" / "skills")
+            copy = root / "codex" / "skills" / "research" / "note.md"
+            self.assertFalse(copy.is_symlink())
+            self.assertEqual(copy.read_text(), "shared note\n")
+
+    def test_unclosed_frontmatter_is_a_clear_error(self) -> None:
+        with self.assertRaisesRegex(ValueError, "no closing ---"):
+            build_codex.codex_skill_md("---\nname: x\ndescription: y\n\n# Title\n")
+
 
 if __name__ == "__main__":
     unittest.main()
