@@ -5,6 +5,7 @@ is linked, preventing a repeated install from creating a nested self-symlink.
 
 ```bash
 # SECURITY-REVIEW: Run only from this trusted checkout with the expected HOME.
+source_root="$PWD/skills"
 install_root="$HOME/.claude/skills"
 backup_root="$HOME/.claude/skills-backups/$(date +%Y%m%d-%H%M%S)-$$"
 mkdir -p "$install_root" "$backup_root"
@@ -16,7 +17,7 @@ install_skill() {
   if [[ -e "$destination" || -L "$destination" ]]; then
     mv "$destination" "$backup_root/$skill"
   fi
-  ln -s "$PWD/skills/$skill" "$destination"
+  ln -s "$source_root/$skill" "$destination"
 }
 
 install_skill sergio-loop
@@ -29,8 +30,9 @@ install_skill research
 install_skill implement
 ```
 
-For Codex, run the same block with `install_root="$HOME/.agents/skills"` and a backup directory beside it.
-Codex calls a skill as `$<name>`. The Stop hook below is Claude Code only, so in Codex each loop runs one pass
+For Codex, run the same block with `source_root="$PWD/codex/skills"` and
+`install_root="$HOME/.agents/skills"`. Codex calls a skill as `$<name>`, and the Codex copies run only when
+named that way. The Stop hook below is Claude Code only, so in Codex each loop runs one pass
 per invocation, saves its state and reports how to resume.
 
 To let the goal loop continue in every repository, install the inert global runtime. The installer below

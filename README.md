@@ -11,7 +11,7 @@
 Skills for [Claude Code](https://claude.com/claude-code) and [Codex](https://developers.openai.com/codex).
 The durable loops drive a repository toward a goal. The parallel skills split a review, an
 investigation, a research question or a change across independent agents. Each skill is one folder in
-the shared `SKILL.md` format, so the same copy works in both tools.
+the shared `SKILL.md` format: `skills/` holds the Claude Code copies and `codex/skills/` the Codex ones.
 
 ## Features
 
@@ -31,7 +31,7 @@ git clone https://github.com/GeiserX/claude-skills.git && cd claude-skills
 mkdir -p ~/.claude/skills && ln -s "$PWD/skills/sergio-loop" ~/.claude/skills/sergio-loop
 ```
 
-In Codex, link skills into `~/.agents/skills/` instead and call them as `$<name>`. The loop Stop hook is Claude Code only.
+In Codex, link from `codex/skills/` into `~/.agents/skills/` instead and call a skill as `$<name>`. The loop Stop hook is Claude Code only.
 
 Then run `/sergio-loop <goal>` in a fresh Claude Code session. If a skill of the same name is already installed, use the [installer](docs/installation.md), which moves it aside first. The same page installs the Stop hook.
 
