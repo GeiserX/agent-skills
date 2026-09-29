@@ -39,13 +39,15 @@ For each recipe, record what an empty result looks like and what an error looks 
 KB_DIR='<path to your markdown folder>'
 QUERY='<rare token>'
 rg -n -i --no-heading -C 2 -- "$QUERY" "$KB_DIR"
-rg -q -- "$QUERY" "$KB_DIR"; echo "rg exit: $?"   # 1 = no match, 2 = error; both print nothing
+rg -q -i -- "$QUERY" "$KB_DIR"; echo "rg exit: $?"   # 1 = no match, 2 = error; both print nothing
 ```
 
 ### 3b. SQLite full-text index (FTS5)
 
 ```bash
 DB='<path to your index.sqlite>'
+# QUERY is an FTS5 expression. Put any term with a character other than a letter, digit or underscore
+# in double quotes, as in "O'Reilly" or "retry-budget"; bare, FTS5 rejects it with an error.
 QUERY='<rare token> OR "<exact phrase>"'
 SAFE=${QUERY//\'/\'\'}   # double single quotes so the query cannot break out of the SQL string
 sqlite3 -readonly "$DB" "SELECT path, snippet(docs, 1, '[', ']', ' ... ', 12) FROM docs WHERE docs MATCH '$SAFE' ORDER BY rank LIMIT 20;"
@@ -58,8 +60,9 @@ Table and columns: `<table, text, date, author>`. Open with `-readonly` when ano
 ```bash
 RAG_URL='<https://your-rag-endpoint/search>'
 QUERY="<question in the record's own words>"
-curl -sS --max-time 30 -H "Authorization: Bearer $RAG_TOKEN" -H 'Content-Type: application/json' \
-  -d "{\"query\": \"$QUERY\", \"top_k\": 10}" "$RAG_URL"
+jq -n --arg query "$QUERY" '{query: $query, top_k: 10}' |
+  curl -sS --max-time 30 -H "Authorization: Bearer $RAG_TOKEN" -H 'Content-Type: application/json' \
+    --data-binary @- "$RAG_URL"
 ```
 
 Response fields: `<field with the text>`, `<field with the source path or URL>`, `<field with the date>`. A vector search always returns its top k, even when nothing is relevant, so a hit is a lead until you open the source it names.
