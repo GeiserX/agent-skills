@@ -1,4 +1,4 @@
-# Skills
+# Usage
 
 ## Goal loop: `/sergio-loop`
 
