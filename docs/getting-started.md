@@ -1,4 +1,6 @@
-# Installation
+# Getting started
+
+Each skill is one folder in the shared `SKILL.md` format: `skills/` holds the Claude Code copies and `codex/skills/` the Codex ones.
 
 Run this from the repository root. Existing destinations are moved aside before each skill directory
 is linked, preventing a repeated install from creating a nested self-symlink.
@@ -104,6 +106,6 @@ invocation details.
 ## Canonical sources and local overlays
 
 The public files in `skills/` are intentionally generic canonical sources. Local installed copies
-may add private workspace or cmux policy as separate overlays. Keep those local additions out of
+may add private workspace policy as separate overlays. Keep those local additions out of
 this repository instead of committing private policy into the canonical skills.
 
