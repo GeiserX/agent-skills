@@ -22,7 +22,16 @@ install_skill() {
 install_skill sergio-loop
 install_skill refine-loop
 install_skill docs-loop
+install_skill investigate
+install_skill review-pr
+install_skill review-code
+install_skill research
+install_skill implement
 ```
+
+For Codex, run the same block with `install_root="$HOME/.agents/skills"` and a backup directory beside it.
+Codex calls a skill as `$<name>`. The Stop hook below is Claude Code only, so in Codex each loop runs one pass
+per invocation, saves its state and reports how to resume.
 
 To let the goal loop continue in every repository, install the inert global runtime. The installer below
 moves any existing hook files into the same timestamped backup directory used above:
