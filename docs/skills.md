@@ -124,3 +124,27 @@ All five run only when you call them by name: `/<name>` in Claude Code, `$<name>
 /research How does connection pooling work in this app?
 /implement Add webhook retries with exponential backoff
 ```
+
+## Knowledge-base skills
+
+Two skills that answer from your team's own record: chat archives, call transcripts, tickets, wiki pages,
+notes or any mix. They work with whatever you already have, whether that is a folder of markdown, a
+SQLite full-text index, a RAG endpoint, an MCP server or a CLI. Before first use, fill in the adapter in
+`references/knowledge-base.md`. It ranks your sources and says how to reach, query, cite and refresh each
+one, plus the traps and privacy rules. Both skills stop and ask when a source they need still has
+placeholders.
+
+- `kb-research` answers a question from the record, read-only. Every claim carries an anchor it was read
+  from, and a quote is checked against the raw source. Reversed and stale decisions are listed apart,
+  and the report always says what was searched and found nothing.
+- `kb-review` reviews a pull request the way your reviewers do, using the learnings you record in
+  `references/review-learnings.md`. It verifies every finding against the code and reports only. It
+  posts nothing unless you approve the exact text.
+
+Both skills ship the same adapter template. Keep one filled-in copy and link or copy it into the other
+skill; a test fails when the two templates in this repository differ.
+
+```text
+/kb-research Did we decide to drop the retry budget?
+/kb-review 42
+```
