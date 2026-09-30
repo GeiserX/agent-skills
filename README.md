@@ -30,13 +30,16 @@ git clone https://github.com/GeiserX/agent-skills.git && cd agent-skills
 mkdir -p ~/.claude/skills && ln -s "$PWD/skills/sergio-loop" ~/.claude/skills/sergio-loop
 ```
 
-Then run `/sergio-loop <goal>` in a fresh Claude Code session. If a skill of the same name is already installed, the [installer](docs/getting-started.md) moves it aside first and also installs the Stop hook. In Codex, link from `codex/skills/` into `~/.agents/skills/` and call a skill as `$<name>`; the Stop hook is Claude Code only.
+Then run `/sergio-loop <goal>` in a fresh Claude Code session. If a skill of the same name is already installed, the [installer](https://geiserx.github.io/agent-skills/getting-started/) moves it aside first and also installs the Stop hook. In Codex, link from `codex/skills/` into `~/.agents/skills/` and call a skill as `$<name>`; the Stop hook is Claude Code only.
 
 ## Documentation
 
-- [Getting started](docs/getting-started.md): the skill and hook installers, `settings.json` entries, canonical sources and local overlays
-- [Usage](docs/usage.md): what each skill does, its defaults and invocations, the goal loop, the parallel skills and the knowledge-base skills
-- [Development](docs/development.md): validating the skill packages, rebuilding the Codex copies, running the tests
+The full documentation is at [geiserx.github.io/agent-skills](https://geiserx.github.io/agent-skills/).
+
+- [Getting started](https://geiserx.github.io/agent-skills/getting-started/): the skill and hook installers, `settings.json` entries, canonical sources and local overlays
+- [Usage](https://geiserx.github.io/agent-skills/usage/): what each skill does, its defaults and invocations, the goal loop, the parallel skills and the knowledge-base skills
+- [Development](https://geiserx.github.io/agent-skills/development/): validating the skill packages, rebuilding the Codex copies, running the tests
+- [Related projects](https://geiserx.github.io/agent-skills/related/): the skills from other projects kept in `vendor/`, and the repository this one replaced
 
 ## Other people's skills
 
