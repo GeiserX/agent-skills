@@ -30,6 +30,8 @@ install_skill review-pr
 install_skill review-code
 install_skill research
 install_skill implement
+install_skill kb-research
+install_skill kb-review
 ```
 
 For Codex, run the same block with `source_root="$PWD/codex/skills"` and

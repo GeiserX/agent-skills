@@ -1,0 +1,115 @@
+/* docs/stylesheets/theme.css: the site takes its colours from the banner.
+ *
+ * banner.svg draws "agent-skills" in #fdf6e3 on a #0f3b3d plate, the caption
+ * in #9fe0d0, and the mark as a pocket knife with a #d62b2b handle. The
+ * header and the dark page use the plate colour, links and card borders the
+ * caption colour, and the one filled button the handle red. mkdocs.yml sets
+ * primary and accent to custom, so nothing is painted until these exist.
+ */
+:root {
+  --md-primary-fg-color: #0f3b3d; /* banner plate, used as the header */
+  --md-primary-fg-color--light: #164a4c;
+  --md-primary-fg-color--dark: #0a2c2e;
+  --md-primary-bg-color: #fdf6e3; /* banner wordmark, 11.4:1 on the header */
+  --md-primary-bg-color--light: #9fe0d0; /* banner caption */
+
+  --md-accent-fg-color: #9fe0d0; /* banner caption */
+  --md-accent-fg-color--transparent: #9fe0d01a;
+}
+
+/* Dark scheme: the page body uses the plate colour too, so the header and
+   the page read as one surface. #9fe0d0 is 8.2:1 on the page and 6.6:1 on
+   code blocks. */
+[data-md-color-scheme="slate"] {
+  --md-default-bg-color: #0f3b3d;
+  --md-code-bg-color: #164a4c;
+  --md-typeset-a-color: #9fe0d0;
+}
+
+/* Light scheme: #9fe0d0 on white is 1.5:1, too faint for links and hover
+   states. #257460 is the same hue at 5.6:1. */
+[data-md-color-scheme="default"] {
+  --md-typeset-a-color: #257460;
+  --md-accent-fg-color: #257460;
+  --md-accent-fg-color--transparent: #2574601a;
+}
+
+/* The mark is a wide knife (512 by 234), not a square. Fix the height and
+   let the width follow; a 1.6rem square would draw it 11px tall. */
+.md-header__button.md-logo img,
+.md-header__button.md-logo svg {
+  height: 1.6rem;
+  width: auto;
+}
+
+/* The site name, set the way banner.svg sets the wordmark: heavy, in the
+   wordmark colour. Only the first topic is styled; Material puts the page
+   title in a second .md-header__topic and swaps them on scroll. */
+.md-header__topic:first-child .md-ellipsis {
+  color: #fdf6e3;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+/* Keep the mark and the name close, so they read as one unit. */
+.md-header__button.md-logo {
+  padding-right: 0.2rem;
+}
+
+.md-header__title {
+  margin-left: 0.2rem;
+}
+
+/* Buttons. Material paints .md-button in the header colour, which on the
+   dark page is also the page background. Outline buttons take the link
+   colour instead; on hover the text takes the page colour (#0f3b3d on
+   #9fe0d0 is 8.2:1, white on #257460 is 5.6:1). */
+.md-typeset .md-button {
+  color: var(--md-typeset-a-color);
+  border-color: var(--md-typeset-a-color);
+  border-radius: 0.5rem;
+}
+
+.md-typeset .md-button:focus,
+.md-typeset .md-button:hover {
+  background-color: var(--md-typeset-a-color);
+  border-color: var(--md-typeset-a-color);
+  color: var(--md-default-bg-color);
+}
+
+.md-typeset .md-button--primary,
+.md-typeset .md-button--primary:focus,
+.md-typeset .md-button--primary:hover {
+  /* White on #d62b2b is 4.95:1, on #b82424 6.3:1. */
+  background: linear-gradient(90deg, #d62b2b 0%, #b82424 100%);
+  border-color: transparent;
+  color: #ffffff;
+}
+
+/* Grid cards: the border takes the link colour on hover, in both schemes. */
+.md-typeset .grid.cards > ul > li,
+.md-typeset .grid > .card {
+  border-radius: 0.5rem;
+}
+
+.md-typeset .grid.cards > ul > li:focus-within,
+.md-typeset .grid.cards > ul > li:hover,
+.md-typeset .grid > .card:focus-within,
+.md-typeset .grid > .card:hover {
+  border-color: var(--md-typeset-a-color);
+}
+
+/* The home page keeps an H1 for search, screen readers and the browser tab.
+   The banner under it already shows the name, so the H1 is hidden visually.
+   Use it as: # agent-skills { .as-visually-hidden } */
+.md-typeset h1.as-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
