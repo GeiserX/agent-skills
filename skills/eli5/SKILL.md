@@ -1,6 +1,6 @@
 ---
 name: eli5
-description: Explain work, a system or a situation to Sergio so he understands it on one read, in plain words with real names only. Use when he asks to explain like a 5yo, says eli5, says he does not understand what was done or where things stand, or asks what something is.
+description: Explain work, a system or a situation to Sergio in plain words with real names, so he understands it on one read. Use when he asks to explain like a 5yo, says eli5, or says he does not understand what was done or where things stand.
 ---
 
 # eli5
