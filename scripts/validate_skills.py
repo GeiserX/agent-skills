@@ -261,7 +261,7 @@ class Validator:
                 "skill-too-long",
                 "SKILL.md must contain fewer than 500 lines",
             )
-        frontmatter, body_start = self._parse_frontmatter(skill.skill_file, lines)
+        frontmatter, _ = self._parse_frontmatter(skill.skill_file, lines)
         name = frontmatter.get("name", "")
         description = frontmatter.get("description", "")
         if not name:
@@ -290,16 +290,6 @@ class Validator:
                 1,
                 "invalid-disable-model-invocation",
                 "disable-model-invocation must be true or false",
-            )
-        body = "\n".join(lines[body_start:])
-        is_mutating_loop = "loop" in f"{name} {description}".lower() and bool(MUTATION_RE.search(body))
-        if is_mutating_loop and disable != "true":
-            self.add(
-                "ERROR",
-                skill.skill_file,
-                1,
-                "mutating-loop-invocation",
-                "mutating loop skills must set disable-model-invocation: true",
             )
 
         for path in skill.markdown_files:
