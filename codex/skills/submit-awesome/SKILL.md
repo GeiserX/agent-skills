@@ -59,9 +59,10 @@ skill uses the same ledger for every other kind of place.
    the list's own lint when it has one, commit in the list's message style, and open a normal pull request, not a
    draft. Fill the PR template in the owner's first person: what the project does, why it fits the section, links.
    Tick only the checklist items you verified. Done when the PR URL and the entry text are in the ledger.
-6. **Prepare the packet lists.** For each, write a packet: the list URL, the rule quoted, the exact entry line, the
-   section, the PR title and body text, and every checkbox with what it attests. The owner reads it, decides,
-   rewrites what they want, and submits from their own account, answering any attestation truthfully. Done when
+6. **Prepare the packet lists.** For each, write a packet of facts only: the list URL, the rule quoted, the section
+   and the entry format, the repo's facts and links, and every checkbox with what it attests. Draft no entry line,
+   PR title or body, because the list's rule bars exactly that. The owner writes the entry, decides, and submits
+   from their own account, answering any attestation truthfully. Done when
    each packet is in the report and its row says `packet`.
 7. **List the waiting ones.** A list the repo qualifies for only later (age, stars, release) gets its first eligible
    day in the ledger. Done when every such row has a date.

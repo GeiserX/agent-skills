@@ -36,8 +36,10 @@ the clock. It outranks summaries, memory and your own earlier messages, which de
    - subagents, with their names and last reports;
    - background tasks and their output files;
    - loop or goal state files, status docs and worklogs the work keeps;
-   - for each repository and worktree: `git worktree list`, then `git status`, `git log origin/<branch>..HEAD` and
-     `git log HEAD..origin/<default>`; the open pull requests with their checks; the recent merges.
+   - for each repository and worktree: `git fetch origin` and `git worktree list`, then `git status`,
+     `git log origin/<branch>..HEAD` and `git log HEAD..origin/<default>`; when `origin/<branch>` does not exist,
+     the branch was never pushed, so read `git log origin/<default>..HEAD` instead; then the open pull requests
+     with their checks and the recent merges.
 
    Done when every unit any source names is listed.
 2. **Write the ledger.** One row per unit, with its state and one line of evidence, taken from the world and never
@@ -60,7 +62,8 @@ the clock. It outranks summaries, memory and your own earlier messages, which de
    - A subagent that still has its context: continue it with a message that gives only the delta, what moved in the
      world while it was gone.
    - A worker that must start fresh: hand it its ledger row and this opening: the previous attempt died mid-work;
-     before writing, run `git status`, `git diff` and `git log origin/<branch>..HEAD` and read the PR's comments,
+     before writing, run `git fetch origin`, `git status`, `git diff` and `git log origin/<branch>..HEAD` (or
+     `origin/<default>..HEAD` for a branch never pushed) and read the PR's comments,
      keep every edit that is right and finish it, complete a half-done merge, then continue.
    - Never send a new message to a worker inside a running orchestrated run; that starts a second writer on the same
      branch. Stop the run and relaunch the unit with its edge.

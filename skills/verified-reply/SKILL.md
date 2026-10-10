@@ -27,7 +27,8 @@ post only on their approval of the exact text.
 5. **Hand it over.** The reply, then separately one line per claim with its source, so the user can defend each line.
    Flag what you cut or softened. The evidence never goes into the message itself. Done when the user has both.
 6. **Post on approval only.** Post the exact text the user approved, through the tool for that surface. If they
-   edited it, post their version. Then read the posted item back and confirm it rendered: code in backticks, links
+   edited it, check any claim the edit added or changed, say what the check found, and post their version once
+   they approve it. Then read the posted item back and confirm it rendered: code in backticks, links
    live, formatting intact. Done when the posted text matches the approved text.
 
 ## Rules for the text

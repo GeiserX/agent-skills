@@ -44,7 +44,8 @@ Awesome lists go through the `submit-awesome` skill, which writes to the same le
    the plan with the places it keeps closed.
 3. **Baseline.** Record today's stars and the 14-day views, clones and referrers in the ledger with the date:
    `gh api repos/<owner>/<repo>/traffic/views`, `.../traffic/clones`, `.../traffic/popular/referrers`. These need
-   push access. Done when the numbers are in the ledger.
+   push access; without it, ask the owner for the dated figures from the repo's Insights tab, or record the
+   baseline as unavailable. Done when the ledger has the numbers or says why it has none.
 4. **Plan every fitting place.** Walk `places.md` in its order: GitHub itself, registries and stores, then the
    remaining sections, then the country and language sections that match the facts. For each place whose "fits"
    matches the repo, read its ledger row if one exists, search the live place for the repo, and check its floor
@@ -90,7 +91,8 @@ Each item opens places; the sources are in `places.md` under "What to do on the 
 ## Honesty and conduct
 
 - Read each place's rule on AI and agents before acting there. Where a place bars agent-made submissions or posts,
-  prepare a packet (entry text, facts, links, the rule quoted) and hand it to the owner, who decides and submits.
+  prepare a packet of facts, links and the rule quoted, without drafted text, and hand it to the owner, who writes,
+  decides and submits.
 - Any question about how the project or the submission was made, and any box that attests human authorship, is the
   owner's to answer, truthfully. Leave such boxes for the owner and never write a claim about it either way.
 - Earn stars, votes and comments only from real readers. Never star, vote or ask anyone to; never use a second
