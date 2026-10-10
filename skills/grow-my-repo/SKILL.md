@@ -24,8 +24,8 @@ Awesome lists go through the `submit-awesome` skill, which writes to the same le
 
 1. **Write the repo's facts.** From its README, releases and package manifests: one line in plain words, licence,
    first and latest release with dates, own domain or demo, container image, platforms, the product it replaces,
-   public datasets it uses, the maintainer's country, stars, and the date of the last commit. Done when each fact
-   has the line or URL it came from.
+   public datasets it uses, the maintainer's country, stars, and the date of the last commit. Check each integration
+   or endpoint the README claims in the code. Done when each fact has the line or URL it came from.
 2. **Readiness gate.** Walk "Readiness" below against the facts. Done when each failed item is fixed, or named in
    the plan with the places it keeps closed.
 3. **Baseline.** Record today's stars and the 14-day views, clones and referrers in the ledger with the date:
@@ -36,10 +36,15 @@ Awesome lists go through the `submit-awesome` skill, which writes to the same le
    remaining sections, then the country and language sections that match the facts. For each place whose "fits"
    matches the repo, read its ledger row if one exists, search the live place for the repo, and check its floor
    (stars, age, release, domain, licence) against the facts. Give it one state: `agent now`, `owner`, `later` with
-   the first eligible day, or `no` with the rule quoted. Done when every `worth it` place in a fitting section has
-   a ledger row.
+   the first eligible day, or `no` with the rule quoted. A repo with a web UI also gets the dashboard icon sets in
+   `places.md`. Done when every `worth it` place in a fitting section has a ledger row.
 5. **Do the `agent now` rows.** Publish to a registry by its route. Fill a web form only after searching the site
-   for the repo and confirming the exact domain. One submission per curator per day. Afterwards fetch the listing
+   for the repo, with a known entry as a control, and confirming the exact domain. One submission per curator per
+   day, and when several repos fit one curator, the day's slot goes to the one with the fewest listings, not the
+   most stars. One person can run two places, which then share the slot. A place that accepts with no human review
+   (Software Heritage) is paced by its rate limit alone. When the owner already has an open PR that adds several
+   apps to one catalogue, each further app that fits goes into it as a new commit, unless that catalogue's own rule
+   bars the app. Afterwards fetch the listing
    page and confirm the link to the repo is on it: a sent form is `submitted`, a page that shows the repo is
    `listed`. Done when each row carries its URL and one of those two states.
 6. **Hand the owner their rows.** For each `owner` place write a brief: the place and its submit URL, its rule
@@ -70,6 +75,8 @@ Each item opens places; the sources are in `places.md` under "What to do on the 
 - The last commit is under six months old, and under three for the strictest directories.
 - A self-hosted app has one version-pinned compose example near the top of the README, with no `container_name`
   and no host Docker socket, and images for amd64 and arm64.
+- A web app keeps its official logo as an SVG with a transparent background that reads on light and dark; the
+  dashboard icon sets accept nothing else. A CLI keeps a terminal screenshot and a short GIF at public URLs.
 - A flagship app has its own domain; several directories refuse free subdomains and GitHub-only projects.
 - The README says where the maintainer is based, and lists the public datasets the repo uses with their catalogue
   URLs. Regional directories and open-data catalogues ask for both.
@@ -93,6 +100,12 @@ Each item opens places; the sources are in `places.md` under "What to do on the 
   communities on one day.
 - A removed post is not reposted, a flat post is not propped up, and a place that declined is logged as `no` with
   its reason.
+- A contact form on a newsletter, blog, podcast or news site is a pitch: write the owner a brief and leave the
+  sending to them.
+- On an open pull request, rewrite only the PR's own commits. A whole-history rewrite that leaves the branch with no
+  history in common with the base makes GitHub close the PR, and it cannot be reopened (seen on 2026-10-10). Before every push, read the author and committer of each new commit
+  (`git log --format='%an <%ae> | %cn <%ce>' <base>..HEAD`) and push only the owner's public identity. A PR left as
+  a draft gets no review; mark it ready once its checks pass.
 
 ## Keeping the reference true
 

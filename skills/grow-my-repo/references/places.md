@@ -76,11 +76,11 @@ Here publishing is the listing. Floors are noted per place; recheck them each qu
 
 ### Self-hosted app stores
 
-- **Unraid Community Applications** `[worth it, agent]` Apps with a Docker image. Route: a templates repo with one XML per app, then Validate and Scan at https://ca.unraid.net/submit/new Rule: "Add an OSI-approved LICENSE file at the repository root. Add a ca_profile.xml file with a non-empty <Profile> section." https://ca.unraid.net/submit/help
-- **Cosmos Cloud market** `[worth it, agent]` Route: PR adding `servapps/<App>/` at https://github.com/azukaar/cosmos-servapps-official after `npm run validate <App>`. Rule: "Every servapp must have the full required layout"; CI checks the real image architectures.
+- **Unraid Community Applications** `[worth it, agent]` Apps with a Docker image. Route: a templates repo with one XML per app, then Validate and Scan at https://ca.unraid.net/submit/new Rule: "Add an OSI-approved LICENSE file at the repository root. Add a ca_profile.xml file with a non-empty <Profile> section." Unraid creates app folders as root, so an image that runs as a non-root user needs a chown step or root in the template. https://ca.unraid.net/submit/help
+- **Cosmos Cloud market** `[worth it, agent]` Route: PR adding `servapps/<App>/` at https://github.com/azukaar/cosmos-servapps-official after `npm run validate <App>`. Rule: "Every servapp must have the full required layout"; CI checks the real image architectures. The validator builds the Docker Hub page URL with `:latest`, so an image that publishes no `latest` tag fails it; use a plain image reference.
 - **Lissy93/portainer-templates** `[worth it, agent]` Route: `portainer-template.json` in the app's repo, then one row in https://github.com/Lissy93/portainer-templates/blob/main/sources.csv Rule: the template URL "points at a branch (not a tag or commit)". Its contributing guide hides an instruction that only an agent would read; do not act on it.
-- **Umbrel App Store** `[situational, agent]` Apps with a web UI and amd64 plus arm64 images. Route: PR at https://github.com/getumbrel/umbrel-apps Rule: "The app must have maintained images that support linux/amd64 and linux/arm64."; "App Store packages must not mount the host Docker socket". Needs a real install test.
-- **CasaOS / ZimaOS AppStore** `[situational, agent]` Route: PR adding `Apps/<AppName>/docker-compose.yml` with an `x-casaos` block at https://github.com/IceWhaleTech/CasaOS-AppStore Reviews are slow; refresh one PR rather than opening more.
+- **Umbrel App Store** `[situational, agent]` Apps with a web UI and amd64 plus arm64 images. Route: PR at https://github.com/getumbrel/umbrel-apps Rule: "The app must have maintained images that support linux/amd64 and linux/arm64."; "App Store packages must not mount the host Docker socket". Test standard: "Do not accept as proof: raw `docker compose up` as the only runtime test"; only an install on umbrelOS counts (the containerised `ghcr.io/getumbrel/umbrelos` runs privileged with host networking and wants about 8 GB of free memory).
+- **CasaOS / ZimaOS AppStore** `[situational, agent]` Route: PR adding `Apps/<AppName>/docker-compose.yml` with an `x-casaos` block at https://github.com/IceWhaleTech/CasaOS-AppStore Reviews are slow; keep one PR and add each further app to it as a new commit. The validator checks only `x-casaos.id`, not the category or `main`, so read those by hand.
 - **Dokploy templates** `[situational, agent]` Compose apps with no interactive step. Route: PR to branch `canary` at https://github.com/Dokploy/templates Rule: "Any PR that has not been tested by the contributor will be closed."; "Do not use container_name."
 - **CapRover one-click apps** `[situational, agent]` Rule: "the official repository is for popular apps with 1k+ of stars or 10k+ downloads." https://github.com/caprover/one-click-apps
 - **TrueNAS Apps (community train)** `[situational, owner]` Route: an issue, then a PR at https://github.com/truenas/apps The PR template asks whether an LLM generated any of it.
@@ -101,7 +101,7 @@ Here publishing is the listing. Floors are noted per place; recheck them each qu
 - **An own Homebrew tap** `[worth it, agent]` CLIs, macOS apps. Route: a public repo `homebrew-<name>`; goreleaser can push the formula on each release. No gate, no discovery by itself. https://docs.brew.sh/How-to-Create-and-Maintain-a-Tap
 - **npm** `[worth it, agent]` Route: a trusted publisher, then `npm publish` from GitHub Actions with `id-token: write`. Rule: "Trusted publishing requires npm CLI version 11.5.1 or later and Node version 22.14.0 or higher". https://docs.npmjs.com/trusted-publishers
 - **PyPI** `[worth it, agent after the owner adds the publisher]` Route: a Trusted Publisher at https://pypi.org/manage/account/publishing/ then `pypa/gh-action-pypi-publish`. https://docs.pypi.org/trusted-publishers/
-- **pkg.go.dev** `[worth it, automatic]` Tag a version and fetch it once through `proxy.golang.org`, or press Request on the module page. https://pkg.go.dev/about
+- **pkg.go.dev** `[worth it, automatic]` Tag a version and fetch it once through `proxy.golang.org`, or press Request on the module page. A module page can stay on an old version after a new tag: open `https://pkg.go.dev/<module>@<new tag>`, which answers 404 with a Request button, and press it once. https://pkg.go.dev/about
 - **AUR** `[worth it, agent]` CLIs and Linux desktop apps. Route: push `PKGBUILD` and `.SRCINFO` to `ssh://aur@aur.archlinux.org/<pkgbase>.git`; prebuilt binaries use the `-bin` suffix. Rule: "Please do not just submit and forget about packages!" Wire the version bump into the release workflow. https://wiki.archlinux.org/title/AUR_submission_guidelines
 - **crates.io** `[situational, agent]` Rule: "a publish is generally permanent." https://doc.rust-lang.org/cargo/reference/publishing.html
 - **Homebrew core and cask** `[situational, owner]` Rule: "at least 90 forks, 90 watchers or 225 stars for a self-submission by the repository owner"; repo at least 30 days old. AI: "You must answer all maintainer questions and pull request review comments yourself, without using AI/LLM."; AI use is disclosed in the PR. https://github.com/Homebrew/brew/blob/main/docs/Package-Acceptance-Policy.md
@@ -123,7 +123,7 @@ Here publishing is the listing. Floors are noted per place; recheck them each qu
 
 ### Ecosystem catalogues
 
-- **HACS default repositories** `[worth it, agent from the owner's fork]` Home Assistant integrations, cards, themes. Rule: "Only the owner or a major contributor of a repository can submit"; the HACS action "must pass without any errors or ignores". The queue is months long. https://github.com/hacs/documentation/blob/main/source/docs/publish/include.md
+- **HACS default repositories** `[worth it, agent from the owner's fork]` Home Assistant integrations, cards, themes. Rule: "Only the owner or a major contributor of a repository can submit"; the HACS action "must pass without any errors or ignores". The queue is months long, and a draft PR gets no review: mark it ready once the integration has a release that passes HACS and hassfest. https://github.com/hacs/documentation/blob/main/source/docs/publish/include.md
 - **Jellyfin plugin repositories** `[worth it, owner writes the PR text]` Plugins with their own `manifest.json`. Rule: "LLM output is expressly prohibited for any direct communication, including the following: issues or comments, feature requests or comments, pull request bodies or comments"; "Any primarily-LLM-developed projects should be clearly marked as such." https://jellyfin.org/docs/general/contributing/llm-policies
 - **GitHub Marketplace (Actions)** `[worth it, owner ticks the box]` Route: Draft a release, tick "Publish this Action to the GitHub Marketplace". Rule: "Actions are published to GitHub Marketplace immediately and aren't reviewed by GitHub". https://docs.github.com/en/actions/how-tos/create-and-publish-actions/publish-in-github-marketplace
 - **VS Code Marketplace and Open VSX** `[worth it, agent after the owner signs once]` Route: `vsce publish` and `npx ovsx publish`. Open VSX reaches Cursor, Windsurf and VSCodium. Rule: "On December 1, 2026, global Personal Access Tokens (PATs) in Azure DevOps are retired."
@@ -159,10 +159,11 @@ Here publishing is the listing. Floors are noted per place; recheck them each qu
 They bring trust, citations and long-tail search more than launch traffic.
 
 - **Zenodo** `[worth it, owner enables once, then automatic]` Repos someone might cite. Route: link GitHub at https://zenodo.org/account/settings/github/ toggle the repo on, publish a release. Rule: "Zenodo archives your repository and issues a new DOI each time you create a new GitHub release."; "If your repository also contains a .zenodo.json file, Zenodo will only use the .zenodo.json metadata and ignore the CITATION.cff entirely."
-- **Software Heritage** `[worth it, agent in a browser]` Every public repo. Route: https://archive.softwareheritage.org/save/ or a webhook on releases. Gives a citable SWHID.
+- **Software Heritage** `[worth it, agent]` Every public repo. Route: https://archive.softwareheritage.org/save/ or a webhook on releases. Gives a citable SWHID. No login, and github.com origins are accepted with no human review, so a curator's day limit does not apply; the anonymous rate limit does (it tripped after ten saves in about three minutes on 2026-10-10). Read a request's state at `https://archive.softwareheritage.org/api/1/origin/save/git/url/<clone URL>/`, or add the webhook so releases save themselves.
 - **tldr-pages** `[situational, owner reviews]` CLIs maintained for a year. Rule: "Please ensure that the project has been maintained for at least a year"; "Pull requests suspected of being made in whole or in part through generative AI or machine translation software without human-review will be closed." Needs the CLA. https://github.com/tldr-pages/tldr/blob/main/CONTRIBUTING.md
 - **Domain registries** `[worth it where they fit]` bio.tools and WorkflowHub for bioinformatics, Hugging Face datasets and Kaggle for data, Google Dataset Search through schema.org `Dataset` markup on a public page.
-- **Context7 and DeepWiki** `[worth it, agent]` Repos with docs people code against. Context7: https://context7.com/add-library ("Anyone can add a public library"). DeepWiki: submit the repo URL on https://deepwiki.com/
+- **Context7** `[worth it, owner signs in]` Repos with docs people code against. Route: https://context7.com/add-library ("Anyone can add a public library"). Adding needs a sign-in, and its Cloudflare Turnstile refused an automated browser even after GitHub OAuth (2026-10-10). Look first with `https://context7.com/api/v1/<owner>/<repo>`.
+- **DeepWiki** `[worth it, agent]` Any public repo. Route: open `https://deepwiki.com/<owner>/<repo>`; an unindexed repo shows "Repository Not Indexed" with one required field, "Email to notify", and an "Index Repository" button. No account; indexing takes minutes.
 
 ### Closed
 
@@ -178,12 +179,23 @@ Free queues run for months, so join them the day a repo goes public. A pricing p
 
 - **selfh.st directory and Self-Host Weekly** `[worth it, agent prepares, owner answers the AI question]` Self-hosted apps. Route: https://selfh.st/submit/ Rule: "Newly launched projects will not be considered for the directory. Consider submitting them to be featured as a 'Project Launch' in Self-Host Weekly instead." The form requires an answer to "Does the project leverage AI to assist with development?". One curator reads every form.
 - **AlternativeTo** `[worth it, agent on the owner's account]` Released apps with a known proprietary counterpart. Route: "Suggest new application". Rule: "Using user profiles to advertise products or software is not allowed."; no closed betas. The free queue is long; a small fee buys a review in days. https://alternativeto.net/faq/
-- **LibHunt** `[worth it, agent]` Route: https://www.libhunt.com/repo/submit and https://selfhosted.libhunt.com/contribute Rule: "It monitors everything that's posted on Reddit, HackerNews & Dev.to", so ranking follows mentions.
-- **selfh.st icons** `[worth it, agent]` Any self-hosted app with an official logo. Route: a "New Icon Request" discussion at https://github.com/selfhst/icons/discussions
+- **LibHunt** `[worth it, agent]` Route: https://www.libhunt.com/repo/submit and https://selfhosted.libhunt.com/contribute Rule: "It monitors everything that's posted on Reddit, HackerNews & Dev.to", so ranking follows mentions. A repo submission was approved automatically and live at once (2026-10-10). On the Topics field, end each topic with a comma so it becomes its own chip; Enter submits the form.
 - **opensourcealternative.to** `[situational, agent]` Route: https://opensourcealternative.to/submit with the proprietary rival named. Free waitlist of months, or a fee for 48 hours.
 - **OpenAlternative** `[situational, agent]` Full applications with their own domain. Rule: "50+ stars on the repository", "250+ stars if the repository is less than 6 months old", "3 months at most since the last commit"; no CLIs, libraries, plugins or "GitHub-only projects". https://openalternative.co/submit
 - **SaaSHub** `[situational, agent]` Products on their own domain with named competitors. Rule: rejects "Products using free subdomains". https://www.saashub.com/services/submit
-- **SourceForge, FSF Free Software Directory, opensource.builders, selfhostyourself.com, nologin.tools** `[situational, agent]` Smaller catalogues; read each form before sending.
+- **SourceForge, FSF Free Software Directory, selfhostyourself.com, nologin.tools** `[situational, agent]` Smaller catalogues; read each form before sending.
+
+### Dashboard apps and icon sets
+
+Self-hosters build start pages with Homarr, Homepage, Dashy, Glance, Heimdall, Fenrus or Organizr, and the tiles take their logo from icon sets. Homepage, Dashy, Glance and the Homarr app have no icon route of their own: they read dashboard-icons (Homepage by bare name, Dashy `hl-`, Glance `di:`) and selfh.st icons (`sh-`, Glance `sh:`), and Homarr's picker also reads homelab-svg-assets. Every set wants the project's own logo as an SVG with a transparent background that reads on light and dark. Check these for every repo with a web UI.
+
+- **dashboardicons.com (homarr-labs/dashboard-icons)** `[worth it, agent signed in]` Route: the form at https://dashboardicons.com/submit ; its CONTRIBUTING sends all contributions there. Rule: "All icons must have transparent backgrounds."; "Only official icons are approved." SVG only, no embedded raster images; `-light` and `-dark` variants for monochrome marks.
+- **selfh.st icons** `[worth it, agent]` Any self-hosted app with an official logo. Route: a "New Icon Request" discussion at https://github.com/selfhst/icons/discussions Rule: "contributions and pull requests will not be accepted from the non-organizational members." SVG preferred, PNG accepted, transparent background. The curator also runs the selfh.st directory, so both share one daily slot.
+- **Heimdall Apps** `[worth it, agent in a browser]` Route: the "App request" issue form at https://github.com/linuxserver/Heimdall-Apps/issues/new/choose with the icon uploaded into the issue; a bot validates it and opens the PR after a maintainer approves. Rule: "Search the existing apps first so we don't create a duplicate"; "`.svg` (preferred) or `.png`. PNGs must be at least 100px on each side". The validator accepts only an icon at a `github.com/user-attachments/assets/` URL, so the upload goes through the web page.
+- **homelab-svg-assets** `[situational, agent]` Route: the "Icon request" issue form at https://github.com/loganmarchione/homelab-svg-assets Rule: "Only homelab-related icons will be added"; "Please only submit SVG files, not PNG files". Slow.
+- **Fenrus** `[situational, agent]` Route: PR adding `Apps/Basic/<Name>/app.json` (`Name`, `Icon`) plus `icon.svg` or `icon.png` at https://github.com/revenz/Fenrus Merges are months apart.
+- **Organizr tab icons** `[situational, agent]` Route: PR against `v2-develop` adding `plugins/images/tabs/<name>.png` (256x256, transparent) at https://github.com/causefx/Organizr Rule: "Only make pull requests to develop (currently v2-develop), never master". A bot closes idle PRs.
+- Closed: Simple Icons ("a minimum of 5k GitHub stars" on the GitHub-only path); Homer and Flame have no icon catalogue.
 
 ### Mac and terminal directories
 
@@ -191,11 +203,10 @@ Free queues run for months, so join them the day a repo goes public. A pricing p
 - **Mac Apps Library** `[worth it, agent]` Route: https://macappslibrary.com/submit Rule: "A standard listing is always free."
 - **MacMenuBar.com** `[worth it, agent]` Menu bar apps only. https://macmenubar.com/submit-your-menu-bar-app/
 - **MacNative** `[worth it, owner signs in]` Native macOS apps. Rejected: "Low-effort AI-generated apps." https://macnative.io/guidelines
-- **Terminal Trove** `[worth it, agent]` CLI and TUI tools. Rule: "Please make sure the tool exists in the package repositories." https://terminaltrove.com/post/
+- **Terminal Trove** `[worth it, agent]` CLI and TUI tools. Rule: "Please make sure the tool exists in the package repositories." The form requires a PNG preview of the tool in a terminal; a GIF is recommended. https://terminaltrove.com/submit/
 
 ### Launch boards
 
-- **DevHunt** `[worth it, agent signed in with GitHub]` Developer tools. Rule: "Tools that are not for developers, NSFW tools, and services that sell fake engagement are not accepted." Free launches wait in a queue. https://devhunt.org/faq
 - **Product Hunt** `[situational, owner]` One or two flagship launches a year with a visual demo. Rule: "you cannot ask people directly to upvote your product. Instead, ask them to visit and comment". https://www.producthunt.com/launch
 - **Peerlist Launchpad** `[situational, owner]` Rule: "only individual profiles with a valid name and profile picture are allowed to launch projects."
 
@@ -207,6 +218,8 @@ Free queues run for months, so join them the day a repo goes public. A pricing p
 ### Closed
 
 - BetaList: "All submissions are paid."
+- DevHunt, https://devhunt.org/faq: the free launch queue ran about four years on 2026-10-10 and free links are nofollow; a fee moves a launch up.
+- opensource.builders: the issue intake has handled no submission since 2025-11 while about 200 issues wait.
 - Free launch boards whose free tier requires a backlink, a badge or a months-long wait behind paid users, and sites that sell "dofollow" links: no measured benefit for an open-source repo.
 
 ## AI and agent tooling
@@ -229,14 +242,14 @@ Free queues run for months, so join them the day a repo goes public. A pricing p
 
 ## Media
 
-A pitch is two or three sentences, written by the owner, with the project link and the install path, sent once.
+A pitch is two or three sentences, written by the owner, with the project link and the install path, sent once. A contact form on a newsletter, blog, podcast or news site is a pitch too, so the owner sends it.
 
 ### Newsletters
 
 - **Console.dev** `[worth it, owner sends]` Developer tools; pre-1.0 fits its Betas list. Route: "Email hello@console.dev with the details". Criteria: "Is the primary user a developer?", "Is it being actively maintained", "Does it have good documentation?". https://console.dev/selection-criteria
 - **Changelog News** `[worth it, owner's account]` Rule: "Submitting your own work is also encouraged." Not wanted: "Commercial products/services." https://changelog.com/news/submit
-- **PyCoder's Weekly** `[worth it, agent]` Python only. https://pycoders.com/submissions
-- **iOS Dev Weekly** `[worth it, agent]` iOS and macOS apps and Swift libraries. Route: https://suggest.iosdevweekly.com/ For libraries it asks for the Swift Package Index listing first.
+- **PyCoder's Weekly** `[worth it, owner sends]` Python only; the note to the editors is a pitch. https://pycoders.com/submissions
+- **iOS Dev Weekly** `[worth it, owner sends]` iOS and macOS apps and Swift libraries; its "why it belongs" field is a pitch. Route: https://suggest.iosdevweekly.com/ For libraries it asks for the Swift Package Index listing first.
 - **Cooperpress weeklies** `[worth it, owner sends]` Go, Node, JavaScript and others: editor@cooperpress.com naming the newsletter.
 - **It's FOSS, Noted, LinuxLinks** `[worth it]` Linux and self-hosted tools. LinuxLinks: "Anyone submitting a project to LinuxLinks must disclose material use of generative AI". Noted invites developers to write the article themselves.
 - **HelloGitHub, ruanyf/weekly** `[situational, agent]` Chinese-language audiences, by issue form.
@@ -368,6 +381,10 @@ Each practice carries its source. "Measured" means a number was read; "no eviden
 - selfh.st, r/selfhosted, r/homelab, selfhosted@lemmy.world, LinuxLinks and Jellyfin ask how AI was used. Keep the answer in the README and link it. https://jellyfin.org/docs/general/contributing/llm-policies/
 - Ages matter: 30 days for Homebrew and r/commandline, a month of commits for r/homelab, three months to leave the r/selfhosted megathread, four months for Obtainium.
 - For self-hosted apps, every store template is cut from the README's compose example. https://github.com/Dokploy/templates/blob/canary/CONTRIBUTING.md
+- Test each store package by that store's own standard before the PR: an umbrelOS install for Umbrel, a real Unraid, Runtipi or Portainer for those. A test box that hits Docker Hub's pull limit can try `mirror.gcr.io/<namespace>/<image>:<tag>` and retag. Google's mirror serves only public images it has cached, so a miss means waiting out the limit; a hit has the same digest.
+- An admin password from an environment variable or a first-run page saves every store template a manual setup step.
+- Check each integration or endpoint the README claims in the code before a place depends on it; a missing one closes those routes.
+- A CLI needs a real terminal screenshot (PNG) and a short GIF at public URLs; Terminal Trove requires the PNG. https://terminaltrove.com/submit/
 - European directories admit an individual under their open-source criteria, never under their company criteria, so say where the maintainer is based. https://european-alternatives.eu/about
 
 ### Launch timing and measurement
