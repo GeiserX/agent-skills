@@ -381,7 +381,7 @@ Each practice carries its source. "Measured" means a number was read; "no eviden
 - selfh.st, r/selfhosted, r/homelab, selfhosted@lemmy.world, LinuxLinks and Jellyfin ask how AI was used. Keep the answer in the README and link it. https://jellyfin.org/docs/general/contributing/llm-policies/
 - Ages matter: 30 days for Homebrew and r/commandline, a month of commits for r/homelab, three months to leave the r/selfhosted megathread, four months for Obtainium.
 - For self-hosted apps, every store template is cut from the README's compose example. https://github.com/Dokploy/templates/blob/canary/CONTRIBUTING.md
-- Test each store package by that store's own standard before the PR: an umbrelOS install for Umbrel, a real Unraid, Runtipi or Portainer for those. A test box that hits Docker Hub's pull limit can pull through `mirror.gcr.io/<namespace>/<image>:<tag>` and retag; the digest is the same.
+- Test each store package by that store's own standard before the PR: an umbrelOS install for Umbrel, a real Unraid, Runtipi or Portainer for those. A test box that hits Docker Hub's pull limit can try `mirror.gcr.io/<namespace>/<image>:<tag>` and retag. Google's mirror serves only public images it has cached, so a miss means waiting out the limit; a hit has the same digest.
 - An admin password from an environment variable or a first-run page saves every store template a manual setup step.
 - Check each integration or endpoint the README claims in the code before a place depends on it; a missing one closes those routes.
 - A CLI needs a real terminal screenshot (PNG) and a short GIF at public URLs; Terminal Trove requires the PNG. https://terminaltrove.com/submit/

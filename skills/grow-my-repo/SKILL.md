@@ -102,8 +102,8 @@ Each item opens places; the sources are in `places.md` under "What to do on the 
   its reason.
 - A contact form on a newsletter, blog, podcast or news site is a pitch: write the owner a brief and leave the
   sending to them.
-- On an open pull request, rewrite only the PR's own commits; a rewrite of the branch's whole history makes GitHub
-  close the PR for good. Before every push, read the author and committer of each new commit
+- On an open pull request, rewrite only the PR's own commits. A whole-history rewrite that leaves the branch with no
+  history in common with the base makes GitHub close the PR, and it cannot be reopened (seen on 2026-10-10). Before every push, read the author and committer of each new commit
   (`git log --format='%an <%ae> | %cn <%ce>' <base>..HEAD`) and push only the owner's public identity. A PR left as
   a draft gets no review; mark it ready once its checks pass.
 
