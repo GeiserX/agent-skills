@@ -1,6 +1,6 @@
 site_name: agent-skills
 site_url: https://geiserx.github.io/agent-skills/
-site_description: Ten skills for Claude Code and Codex. A durable goal loop, a refine loop, a docs loop, five parallel skills and two knowledge-base skills.
+site_description: Skills for Claude Code and Codex. Durable loops, parallel review and investigation, knowledge-base answers, and skills to grow a repository, file pull requests and recover cut-off work.
 repo_url: https://github.com/GeiserX/agent-skills
 repo_name: GeiserX/agent-skills
 edit_uri: edit/main/docs/

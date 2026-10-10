@@ -148,3 +148,69 @@ skill; a test fails when the two templates in this repository differ.
 /kb-research Did we decide to drop the retry budget?
 /kb-review 42
 ```
+
+## Growing a repository
+
+Two skills that get an open-source repository listed where people look for it. Both run only when you name them,
+both keep a ledger (one row per place per repository) that you choose the location of, and both stop at anything
+that needs you.
+
+- [`grow-my-repo`](https://github.com/GeiserX/agent-skills/blob/main/skills/grow-my-repo/SKILL.md) writes down the repository's facts, runs a readiness check (a quick start that works in ten
+  minutes, topics people search, community files, the product it replaces, how AI was used), records the 14-day
+  traffic baseline, then walks a [reference of places](https://github.com/GeiserX/agent-skills/blob/main/skills/grow-my-repo/references/places.md): GitHub itself, registries and app stores, knowledge bases,
+  directories, AI tooling catalogues, media, communities, funding, European catalogues and a national layer. Each
+  place gets a state: done by the agent now, yours, later on a dated day, or no with the place's rule quoted. It
+  sends at most one submission per curator per day, confirms each listing by fetching the page, and reads the
+  traffic again seven days after each listing goes live.
+- [`submit-awesome`](https://github.com/GeiserX/agent-skills/blob/main/skills/submit-awesome/SKILL.md) finds the awesome lists that fit, checks each one three ways for an existing entry, and opens one
+  pull request per list in that list's exact format. Lists that bar AI-written or agent-opened contributions get a
+  packet you can submit yourself instead.
+
+Community posts, Hacker News text, pitches to editors and grant proposals are yours to write; the skills prepare the
+facts, the rules and the links. Neither skill stars, votes, or answers a question about how something was made on
+your behalf.
+
+```text
+/grow-my-repo owner/repo
+/submit-awesome owner/repo
+```
+
+## Pull requests and replies
+
+- [`file-pr`](https://github.com/GeiserX/agent-skills/blob/main/skills/file-pr/SKILL.md) reads the whole branch diff, checks it against the request, and opens a ready pull request (never a
+  draft) whose title states the outcome and whose body opens with the problem in the requester's words. It updates
+  an existing pull request instead of opening a second.
+- [`verified-reply`](https://github.com/GeiserX/agent-skills/blob/main/skills/verified-reply/SKILL.md) drafts a reply you will send as yourself: it lists every claim the reply needs, checks each
+  against a live source, drafts two to four lines in your voice, and hands you the reply with a source per claim.
+  It posts only the exact text you approve, then reads the posted item back.
+
+```text
+/file-pr
+/verified-reply <the message to answer>
+```
+
+## Reviving cut-off work
+
+[`revive`](https://github.com/GeiserX/agent-skills/blob/main/skills/revive/SKILL.md) runs after a usage limit, a crash, a restart or a compaction. It reads the clock and the world (the
+conversation, subagents, background tasks, git, pull requests and CI), writes one ledger row per unit of work with
+its real state (done, pushed, partial, dead-clean, not started), and restarts each unfinished unit from that edge.
+Before every commit, push, pull request, merge, comment or release it checks whether that already happened.
+
+```text
+/revive
+```
+
+## Explaining and deciding
+
+- [`eli5`](https://github.com/GeiserX/agent-skills/blob/main/skills/eli5/SKILL.md) explains work, a system or a situation in two layers: a short version under 200 words, then the full story
+  in fixed sections (who does what, what each thing is, the problem, the steps taken, one scenario end to end, the
+  gaps, where it stands). Real names only, no figurative language.
+- [`help-decide`](https://github.com/GeiserX/agent-skills/blob/main/skills/help-decide/SKILL.md) lays a decision out with the recommendation and the pros and cons first, then how the thing works and
+  what each choice changes, and ends with the question phrased so that one word answers it.
+
+Both are written to one named reader. Change the name in your installed copy.
+
+```text
+/eli5 what happened with the release?
+/help-decide
+```

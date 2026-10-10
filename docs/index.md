@@ -17,7 +17,7 @@ hide:
 
 ---
 
-**agent-skills** is ten skills for [Claude Code](https://claude.com/claude-code) and [Codex](https://developers.openai.com/codex). Left alone, an agent works until its turn ends and then reviews its own change. The goal loop keeps its state outside the session, so it picks up where it stopped, and a fresh reviewer checks each slice before the next one starts. The parallel skills put several independent agents on one bug, pull request, codebase or question, and keep only the findings that hold up against the code. Start with [Getting started](getting-started.md), then [Usage](usage.md).
+**agent-skills** is a set of skills for [Claude Code](https://claude.com/claude-code) and [Codex](https://developers.openai.com/codex). Left alone, an agent works until its turn ends and then reviews its own change. The goal loop keeps its state outside the session, so it picks up where it stopped, and a fresh reviewer checks each slice before the next one starts. The parallel skills put several independent agents on one bug, pull request, codebase or question, and keep only the findings that hold up against the code. Other skills grow a repository, file pull requests, draft replies, recover cut-off work and explain. Start with [Getting started](getting-started.md), then [Usage](usage.md).
 
 <div class="grid cards" markdown>
 
@@ -61,6 +61,13 @@ hide:
 | [`implement`](usage.md#parallel-skills) | Makes the smallest complete change, giving each parallel writer its own files. |
 | [`kb-research`](usage.md#knowledge-base-skills) | Answers from your team's record, read-only, each claim with the anchor it was read from. |
 | [`kb-review`](usage.md#knowledge-base-skills) | Reviews a pull request with the learnings your reviewers recorded, and reports only. |
+| [`grow-my-repo`](usage.md#growing-a-repository) | Plans where an open-source repository gets listed and does the submissions an agent may do. |
+| [`submit-awesome`](usage.md#growing-a-repository) | Sends one entry to each fitting awesome list, by that list's own rules. |
+| [`file-pr`](usage.md#pull-requests-and-replies) | Opens a pull request whose title says why the change matters and whose body starts with the problem. |
+| [`verified-reply`](usage.md#pull-requests-and-replies) | Drafts a reply you send as yourself, with every claim checked against a live source. |
+| [`revive`](usage.md#reviving-cut-off-work) | Brings work cut off by a limit, a crash or a compaction back from its real edge, without doing anything twice. |
+| [`eli5`](usage.md#explaining-and-deciding) | Explains work, a system or a situation in plain words with real names. |
+| [`help-decide`](usage.md#explaining-and-deciding) | Lays a decision out so one word answers it: recommendation and pros and cons first. |
 
 ## What you type
 
@@ -74,6 +81,8 @@ In Claude Code a skill is `/<name>`; in Codex it is `$<name>`. These are the exa
 /review-pr 42
 /research How does connection pooling work in this app?
 /kb-research Did we decide to drop the retry budget?
+/grow-my-repo owner/repo
+/revive
 ```
 
 ## How the goal loop runs
@@ -98,8 +107,9 @@ flowchart LR
 ## What the skills do not do
 
 - None of them treats a stored goal or an earlier approval as permission to merge, publish or deploy. That needs your word in the current session.
-- `/docs-loop` and `/review-pr` never merge. `/kb-review` posts nothing unless you approve the exact text.
-- The five parallel skills and the two knowledge-base skills never start on their own; the model can only run them when you name them. The loops' descriptions tell the model the same.
+- `/docs-loop` and `/review-pr` never merge. `/kb-review` and `/verified-reply` post nothing unless you approve the exact text.
+- `/grow-my-repo` and `/submit-awesome` never star, vote, or answer a question about how something was made on your behalf. Where a place wants a human, they hand you a packet.
+- The parallel skills, the knowledge-base skills, `grow-my-repo` and `submit-awesome` never start on their own; the model can only run them when you name them. The loops' descriptions tell the model the same.
 - The knowledge-base skills bring no knowledge base. You describe yours in `references/knowledge-base.md`, and they stop and ask while it still has placeholders.
 - The installer links only this repository's own skills. The skills from other projects under `vendor/` are listed on [Related projects](related.md).
 

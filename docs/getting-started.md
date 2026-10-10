@@ -32,6 +32,13 @@ install_skill research
 install_skill implement
 install_skill kb-research
 install_skill kb-review
+install_skill grow-my-repo
+install_skill submit-awesome
+install_skill file-pr
+install_skill verified-reply
+install_skill revive
+install_skill eli5
+install_skill help-decide
 ```
 
 For Codex, run the same block with `source_root="$PWD/codex/skills"` and
