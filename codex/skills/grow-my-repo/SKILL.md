@@ -55,7 +55,9 @@ Awesome lists go through the `submit-awesome` skill, which writes to the same le
 5. **Do the `agent now` rows.** Publish to a registry by its route. Fill a web form only after searching the site
    for the repo, with a known entry as a control, and confirming the exact domain. One submission per curator per
    day, and when several repos fit one curator, the day's slot goes to the one with the fewest listings, not the
-   most stars. One person can run two places, which then share the slot. A place that accepts with no human review
+   most stars. When the ledger's queue already names a repo for a curator's day, that repo takes the slot. A run
+   that resumes or relaunches first reads which owners were contacted that day, its own first attempt included,
+   and skips them. One person can run two places, which then share the slot. A place that accepts with no human review
    (Software Heritage) is paced by its rate limit alone. When the owner already has an open PR that adds several
    apps to one catalogue, each further app that fits goes into it as a new commit, unless that catalogue's own rule
    bars the app. Afterwards fetch the listing
@@ -99,7 +101,9 @@ Each item opens places; the sources are in `places.md` under "What to do on the 
 
 - Read each place's rule on AI and agents before acting there. Where a place bars agent-made submissions or posts,
   prepare a packet of facts, links and the rule quoted, without drafted text, and hand it to the owner, who writes,
-  decides and submits.
+  decides and submits. A place whose policy asks that AI use be disclosed is the owner's in the same way: the
+  Ansible community's policy covers every repo of its GitHub orgs and its forum ("The use of AI tools SHOULD be
+  explicitly disclosed", read 2026-10-12).
 - Any question about how the project or the submission was made, and any box that attests human authorship, is the
   owner's to answer, truthfully. Leave such boxes for the owner and never write a claim about it either way.
 - Earn stars, votes and comments only from real readers. Never star, vote or ask anyone to; never use a second
