@@ -102,6 +102,11 @@ Each item opens places; the sources are in `places.md` under "What to do on the 
 
 ## Honesty and conduct
 
+- Nothing that goes stale. Every description handed to a place (a list entry, a directory blurb, a catalogue field)
+  says what the project is and does, never a figure that moves: no counts, versions, licences, dates or "new",
+  unless the place's format requires the field. A moving fact is a future fix PR at each place that carries it, and
+  maintainers ask for exactly this ("can this be generalized so there won't be a need to update this in the
+  future?"). The rule is written in `submit-awesome` step 5 and binds forms too.
 - Read each place's rule on AI and agents before acting there. Where a place bars agent-made submissions or posts,
   prepare a packet of facts, links and the rule quoted, without drafted text, and hand it to the owner, who writes,
   decides and submits. A place whose policy asks that AI use be disclosed is the owner's in the same way. The
