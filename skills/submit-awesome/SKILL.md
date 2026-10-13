@@ -95,5 +95,5 @@ Read 2026-10-10; recheck before use.
 - MunGell/awesome-for-beginners: "we kindly ask that small personal projects not be added".
 - mustbeperfect/definitive-opensource: rejects any repository that contains `AGENTS.md`.
 - avelino/awesome-go: "All public functions and types should have a Go-style documentation header", plus a package
-  comment. Scan every exported symbol with a go/ast walk and run staticcheck ST1000 for package comments before
-  submitting. goreportcard.com is sunset, so the PR carries no grade link (read 2026-10-13).
+  comment. Scan every exported symbol with a go/ast walk and run `staticcheck -checks inherit,ST1000 ./...` for package
+  comments before submitting (ST1000 is off by default). goreportcard.com is sunset, so the PR carries no grade link (read 2026-10-13).

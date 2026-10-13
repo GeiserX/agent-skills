@@ -184,7 +184,7 @@ Free queues run for months, so join them the day a repo goes public. A pricing p
 - **opensourcealternative.to** `[situational, agent]` Route: https://opensourcealternative.to/submit with the proprietary rival named. Free waitlist of months, or a fee for 48 hours.
 - **OpenAlternative** `[situational, agent]` Full applications with their own domain. Rule: "50+ stars on the repository", "250+ stars if the repository is less than 6 months old", "3 months at most since the last commit"; no CLIs, libraries, plugins or "GitHub-only projects". https://openalternative.co/submit
 - **SaaSHub** `[situational, agent]` Products on their own domain with named competitors. Rule: rejects "Products using free subdomains". https://www.saashub.com/services/submit
-- **SourceForge, FSF Free Software Directory, selfhostyourself.com, nologin.tools** `[situational, agent]` Smaller catalogues; read each form before sending. selfhostyourself.com requires your name, email, service name, website and repository; "Alternative to" and notes are optional, so leave "Alternative to" empty when no honest proprietary rival exists (2026-10-13).
+- **SourceForge, FSF Free Software Directory, selfhostyourself.com, nologin.tools** `[situational, agent]` Smaller catalogues; read each form before sending. selfhostyourself.com requires your name, email, service name, website and repository; "Alternative to" and notes are optional. The optional field does not waive the site's rule that the project solves a problem a commercial product also solves; leave it empty rather than name a rival that does not fit (2026-10-13).
 
 ### Dashboard apps and icon sets
 
