@@ -48,7 +48,10 @@ Awesome lists go through the `submit-awesome` skill, which writes to the same le
    apps to one catalogue, each further app that fits goes into it as a new commit, unless that catalogue's own rule
    bars the app. Afterwards fetch the listing
    page and confirm the link to the repo is on it: a sent form is `submitted`, a page that shows the repo is
-   `listed`. Done when each row carries its URL and one of those two states.
+   `listed`. When several agents drain a queue at once, give each curator one agent, send forms that need a site
+   login from the browser that holds that session and login-free forms from an isolated one, have each agent append
+   one line to a shared log right after it sends, and let one coordinator fold the log into the ledger. Done when
+   each row carries its URL and one of those two states.
 6. **Hand the owner their rows.** For each `owner` place write a brief: the place and its submit URL, its rule
    quoted, its weekday or account-age window, the facts and links to include, and the one thing asked of the owner.
    Community posts, Hacker News text, editor pitches and grant proposals are the owner's own words; the brief
