@@ -45,6 +45,12 @@ skill uses the same ledger for every other kind of place.
    the list's own lint when it has one, commit in the list's message style, and open a normal pull request, not a
    draft. Fill the PR template in the owner's first person: what the project does, why it fits the section, links.
    Tick only the checklist items you verified. Done when the PR URL and the entry text are in the ledger.
+   - The entry text is evergreen: it says what the project is and does, and nothing that moves with a release.
+     No counts (countries, stations, stars, downloads), no version numbers, no licence, no dates, no "new" or
+     "latest", unless the list's entry format requires that field, in which case fill it and accept the upkeep.
+     Every moving fact is a fix PR later at every place that carries it, and maintainers ask for exactly this
+     ("can this be generalized so there won't be a need to update this in the future?"). A fix PR follows the same
+     rule: generalize the line instead of refreshing the number.
    - Resolve the fork by its parent, never by its name: GitHub suffixes a second fork of the same name (`-1`,
      `-2`), keeps the old name after the upstream is renamed, and the owner may have an unrelated repo of that
      name. Before any sync, clone or push, run `gh repo view <owner>/<name> --json parent` (or
