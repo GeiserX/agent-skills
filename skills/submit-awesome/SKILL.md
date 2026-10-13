@@ -45,6 +45,13 @@ skill uses the same ledger for every other kind of place.
    the list's own lint when it has one, commit in the list's message style, and open a normal pull request, not a
    draft. Fill the PR template in the owner's first person: what the project does, why it fits the section, links.
    Tick only the checklist items you verified. Done when the PR URL and the entry text are in the ledger.
+   - Resolve the fork by its parent, never by its name: GitHub suffixes a second fork of the same name (`-1`,
+     `-2`), keeps the old name after the upstream is renamed, and the owner may have an unrelated repo of that
+     name. Before any sync, clone or push, run `gh repo view <owner>/<name> --json parent` (or
+     `gh repo list <owner> --fork --json name,parent`) and use the fork whose parent is the list.
+   - Run the lint the way the list's CI runs it. Read the workflow first: some check the PR against the base
+     branch's file, not the branch copy, and some build the README from data files and fail any hand edit. A pass
+     on the wrong input proves nothing.
 6. **Prepare the packet lists.** For each, write a packet of facts only: the list URL, the rule quoted, the section
    and the entry format, the repo's facts and links, and every checkbox with what it attests. Draft no entry line,
    PR title or body, because the list's rule bars exactly that. The owner writes the entry, decides, and submits
@@ -87,3 +94,6 @@ Read 2026-10-10; recheck before use.
   just created are not accepted."
 - MunGell/awesome-for-beginners: "we kindly ask that small personal projects not be added".
 - mustbeperfect/definitive-opensource: rejects any repository that contains `AGENTS.md`.
+- avelino/awesome-go: "All public functions and types should have a Go-style documentation header", plus a package
+  comment. Scan every exported symbol with a go/ast walk and run `staticcheck -checks inherit,ST1000 ./...` for package
+  comments before submitting (ST1000 is off by default). goreportcard.com is sunset, so the PR carries no grade link (read 2026-10-13).
