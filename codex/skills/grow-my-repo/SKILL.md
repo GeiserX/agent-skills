@@ -124,7 +124,13 @@ Each item opens places; the sources are in `places.md` under "What to do on the 
 - Get the owner's yes before each step that creates an account, enters personal data, pays, or makes a
   declaration in the owner's name.
 - One submission per curator per day, one pull request per list, and the same text never goes to several
-  communities on one day.
+  communities on one day. A day is a calendar day in the one timezone the owner names, written at the top of the
+  ledger, so a submission just after local midnight counts for the new day.
+- Some sites need a browser that holds a real session or can show a challenge to a person: DeepWiki serves a
+  reCAPTCHA to a headless or remote browser, and cursor.directory wants the GitHub login. Keep one signed-in browser
+  for those and send everything else to a plain one. A profile page can live at a slug derived from the display
+  name rather than the account name; find a listing by its own URL, not the profile. A "language" field can be a
+  free-text input that ignores a pasted value until typed.
 - A removed post is not reposted, a flat post is not propped up, and a place that declined is logged as `no` with
   its reason.
 - A contact form on a newsletter, blog, podcast or news site is a pitch: write the owner a brief and leave the

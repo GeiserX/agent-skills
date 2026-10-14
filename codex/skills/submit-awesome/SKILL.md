@@ -72,6 +72,22 @@ skill uses the same ledger for every other kind of place.
    - Run the lint the way the list's CI runs it. Read the workflow first: some check the PR against the base
      branch's file, not the branch copy, and some build the README from data files and fail any hand edit. A pass
      on the wrong input proves nothing.
+   - Run the check script with the interpreter flags CI uses: a hardened `python -I` can fail on an import the
+     workflow never trips over. Some checks cannot go red on their own: a catalogue builder that exits 0 and writes
+     its errors to a file, or a loader that warns and skips a malformed entry, so the bad entry merges and silently
+     never shows. Read the output file, or the generated page, not only the exit code.
+   - Where two guides disagree, the CI script wins: a `.github/contributing.md` and its checker may require
+     alphabetical order and a final period while the root `CONTRIBUTING.md` still says "add at the bottom". A CI
+     that already fails on the list's default branch does not gate PRs; do not read it as a verdict on yours.
+   - Prove each check can fail with a control it cannot pass by luck: a spell check lets a near-miss typo through,
+     so the control is a nonsense word. A template box that asserts something about other entries (every entry
+     in this category meets the quality bar) is checked against those entries; when it is false, delete the box's
+     lines instead of ticking them.
+   - Sync the fork before cloning and branch from the list's main: a clone taken before the sync shows the owner's
+     earlier entry missing and looks like a curation removal. Run `git ls-remote` for the branch name before
+     pushing, because a stale branch of that name may already be on the fork with old text. A partial clone
+     (`--filter=blob:none` with a depth) can refuse to push with "missing object"; a plain `--depth 1` clone works.
+     GitHub code search rate-limits the third query in a minute, so space the existing-entry searches.
 6. **Prepare the packet lists.** For each, write a packet of facts only: the list URL, the rule quoted, the section
    and the entry format, the repo's facts and links, and every checkbox with what it attests. Draft no entry line,
    PR title or body, because the list's rule bars exactly that. The owner writes the entry, decides, and submits
@@ -85,7 +101,9 @@ skill uses the same ledger for every other kind of place.
 ## Pacing and conduct
 
 - One PR per list, and never two PRs to the same maintainer or organisation on one day. Lists often share a
-  maintainer; the ledger row names it.
+  maintainer; the ledger row names it. A day is a calendar day in one timezone the owner names (write it at the top
+  of the ledger), not a rolling 24 hours and not UTC by accident: a maintainer reads their PR tab by date, so a PR
+  opened just after midnight local time belongs to the new day even while UTC still shows the old one.
 - Never @-mention maintainers, never comment to ask for a review, never reply in a thread except to relay a
   maintainer's question to the owner. The owner answers questions about the project.
 - No promotional words in the entry: the list's own tone, a plain description, no superlatives.
