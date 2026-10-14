@@ -129,6 +129,11 @@ Each item opens places; the sources are in `places.md` under "What to do on the 
   its reason.
 - A contact form on a newsletter, blog, podcast or news site is a pitch: write the owner a brief and leave the
   sending to them.
+- A public GitHub wiki that outsiders may edit still refuses `git push` from them ("Permission ... denied", seen on
+  2026-10-14). Edit it in the web editor at `/wiki/<Page>/_edit`, then clone `<repo>.wiki.git` afresh and check that
+  the new commit adds only your line, under the owner's public identity.
+- When several agents share one browser, another one can switch the active tab or reset the browser between two of
+  your calls. Confirm a web submission by fetching the result from outside the browser, not by reading your tab again.
 - On an open pull request, rewrite only the PR's own commits. A whole-history rewrite that leaves the branch with no
   history in common with the base makes GitHub close the PR, and it cannot be reopened (seen on 2026-10-10). Before every push, read the author and committer of each new commit
   (`git log --format='%an <%ae> | %cn <%ce>' <base>..HEAD`) and push only the owner's public identity. A PR left as
