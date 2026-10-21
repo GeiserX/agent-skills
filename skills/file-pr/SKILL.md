@@ -50,7 +50,11 @@ The preference now applies to every new thread.
   describe the current full diff, not the sequence of revisions.
 - Reference an issue only when its number is verified from the request, the branch, the commits or the tracker.
   `Fixes #<n>` closes it; `Refs #<n>` only links.
-- A user-visible change gets its screenshot or recording, with one sentence on what to look at.
+- A change to any UI must show it in the PR body before the PR is filed: at least one screenshot of the new or
+  changed screen, and a short recording when the change is a flow (several steps, a state that changes, a
+  click that does something). Take them from the real running app, in its dark theme, with no secrets on screen,
+  and say in one sentence what to look at. Upload them as GitHub attachments so they render inline (the
+  `github-video-embed` recipe works for images too). A UI PR with no image is not ready to file.
 - Keep out customer names, private hostnames, tokens and personal data.
 
 ## Filing
