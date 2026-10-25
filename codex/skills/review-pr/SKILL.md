@@ -54,7 +54,9 @@ Lens schema, required fields: `verdict` (`fix` | `merge-as-is` | `close` | `rede
 **Fixer**, one `agent()` after the lenses (a barrier is right here: it needs all three reports). It drops findings it cannot reproduce or that fall outside the PR's intent, merges duplicates by root cause, takes a better way from a lens when it fits inside the PR, and decides. Then, in this order:
 
 1. Posts one PR comment: what we will change and why, what we cut or leave and why. Plain words, file:line links pinned to the head SHA.
-2. Commits the fixes, each with a test that fails on the PR's original head, and pushes.
+2. Commits the fixes, each with a test that fails on the PR's original head, and pushes. A fix with nothing to execute (docs, config, a skill) carries the check that shows it fixed instead: a validator run, a rendered page, a link check.
+
+On a public repo, it scans the comment text, each commit message and the diff for private data before posting or pushing, the same scan the verifier runs. Nothing private may reach a public write, even once.
 
 Fixer schema, required: `decision` (`fix` | `merge-as-is` | `close`), `comment_url`, `commits[]` (SHA and one line each), `dropped[]` (finding and reason), `new_head_sha`, `merge_pr` (the PR number to merge, which differs from the original when we opened our own), `adoption` (how each consumer takes the change).
 
@@ -86,7 +88,7 @@ Done when each PR is merged or closed, each merge message reads as written, and 
 ## Our PR vs a contributor's PR
 
 - **Ours**: the fixer commits straight to the branch.
-- **A contributor's**: comment before every push. Push to their branch only when "allow edits by maintainers" is on. When it is off, put our commits on a branch of our own on top of theirs, so their commits keep their authorship, and open it as our PR. Say so in the comment on theirs. If the repo runs CI on self-hosted runners, read the diff for workflow, build-script and secret-reading changes before any job runs. Thank them once, in the merge or close comment.
+- **A contributor's**: comment before every push. Push to their branch only when "allow edits by maintainers" is on. When it is off, put our commits on a branch of our own on top of theirs and open it as our PR; say so in the comment on theirs. Their commits keep their authorship on the branch. A squash merge makes the merge commit ours, so name them in its body; when the repo merges with merge commits instead, their authorship survives as is. If the repo runs CI on self-hosted runners, read the diff for workflow, build-script and secret-reading changes before any job runs. Thank them once, in the merge or close comment.
 - **A public repo with a private consumer**: findings about the private consumer stay in the workflow's return value. The PR, its comments and its commits carry invented examples only.
 
 ## When to close instead of fix
