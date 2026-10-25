@@ -101,14 +101,16 @@ agents on a modest one, 4-7 on a normal one and 8-12 or more on a broad or risky
 spawn other agents. The fan-out runs on your default model and the checking of findings on your
 strongest one.
 
-All five run only when you call them by name: `/<name>` in Claude Code, `$<name>` in Codex.
+Four of them run only when you call them by name: `/<name>` in Claude Code, `$<name>` in Codex.
+`review-pr` can also start when you ask the agent to review a pull request.
 
 - `investigate` reproduces a failure, has competing hypotheses tested against each other, and names a
   root cause only when the evidence holds. It edits code only when the request asks for a fix, and
   then adds a test that fails for the root cause first.
-- `review-pr` reviews the exact head of a pull request from several angles, checks every finding
-  against the code, fixes the valid ones within the PR's intent, and has a separate reviewer check the
-  fixes. It stops after three rounds and never merges.
+- `review-pr` reviews one or more pull requests as a single Workflow run. Three blind lenses ask
+  whether it is the right problem, whether it is robust, and whether our own consumers can use it; one
+  fixer comments the plan on the PR and pushes the fixes; an adversarial verifier mutation-tests them
+  and reads CI by name. It merges only when you asked for that in the session and every check is green.
 - `review-code` audits a repository in bounded waves, publishes every verified finding ranked by
   severity, and repairs only what is within scope and worth the churn. It hands behavior changes to
   `investigate` or the [goal loop](#goal-loop-sergio-loop) instead.

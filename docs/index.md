@@ -55,7 +55,7 @@ hide:
 | [`refine-loop`](usage.md#refine-loop) | Makes one small improvement per round that keeps behavior the same, ranked by ROI and checked by a fresh reviewer. |
 | [`docs-loop`](usage.md#docs-loop) | Audits documentation against the default branch: a dry run, staged edits, or one pull request per repository. |
 | [`investigate`](usage.md#parallel-skills) | Reproduces a failure and tests competing hypotheses until one root cause holds. |
-| [`review-pr`](usage.md#parallel-skills) | Reviews a pull request from several angles, fixes the valid findings, and stops after three rounds. |
+| [`review-pr`](usage.md#parallel-skills) | Reviews pull requests in one Workflow run (right problem, robust, usable by us), comments the plan, pushes the fixes, then merges or closes. |
 | [`review-code`](usage.md#parallel-skills) | Audits a repository in waves and publishes every verified finding, ranked by severity. |
 | [`research`](usage.md#parallel-skills) | Answers a question from the code, its history and primary sources, with a source for each claim. |
 | [`implement`](usage.md#parallel-skills) | Makes the smallest complete change, giving each parallel writer its own files. |
@@ -107,9 +107,9 @@ flowchart LR
 ## What the skills do not do
 
 - None of them treats a stored goal or an earlier approval as permission to merge, publish or deploy. That needs your word in the current session.
-- `/docs-loop` and `/review-pr` never merge. `/kb-review` and `/verified-reply` post nothing unless you approve the exact text.
+- `/docs-loop` never merges. `/review-pr` merges only when you asked for it in the current session and every required check is green. `/kb-review` and `/verified-reply` post nothing unless you approve the exact text.
 - `/grow-my-repo` and `/submit-awesome` never star, vote, or answer a question about how something was made on your behalf. Where a place wants a human, they hand you a packet.
-- The parallel skills, the knowledge-base skills, `grow-my-repo` and `submit-awesome` never start on their own; the model can only run them when you name them. The loops' descriptions tell the model the same.
+- The parallel skills (except `review-pr`), the knowledge-base skills, `grow-my-repo` and `submit-awesome` never start on their own; the model can only run them when you name them. The loops' descriptions tell the model the same.
 - The knowledge-base skills bring no knowledge base. You describe yours in `references/knowledge-base.md`, and they stop and ask while it still has placeholders.
 - The installer links only this repository's own skills. The skills from other projects under `vendor/` are listed on [Related projects](related.md).
 
