@@ -10,6 +10,7 @@ ln -s "$PWD/vendor/pstack/skills/<name>" ~/.claude/skills/<name>
 
 - **pstack**, from [cursor/plugins](https://github.com/cursor/plugins/tree/main/pstack) through its Claude Code port: 52 skills and 2 agents, such as `unslop`, `blast-radius` and `show-me-your-work`. The source commits, the local changes and the skills not to enable are in [vendor/pstack/PROVENANCE.md](https://github.com/GeiserX/agent-skills/blob/main/vendor/pstack/PROVENANCE.md).
 - **writing-for-agents**, one skill copied unchanged from a public skills collection. The source, the commit and the licence are in [vendor/mattpocock-skills/PROVENANCE.md](https://github.com/GeiserX/agent-skills/blob/main/vendor/mattpocock-skills/PROVENANCE.md).
+- **frontend-design**, Anthropic's skill for page and UI design, copied unchanged. The source, the commit and the licence are in [vendor/anthropic-skills/PROVENANCE.md](https://github.com/GeiserX/agent-skills/blob/main/vendor/anthropic-skills/PROVENANCE.md).
 
 ## Earlier repositories
 

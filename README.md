@@ -52,6 +52,7 @@ The full documentation is at [geiserx.github.io/agent-skills](https://geiserx.gi
 
 - [pstack](https://github.com/cursor/plugins/tree/main/pstack) by Lauren Tan (MIT), 52 skills such as `unslop`, `blast-radius` and `show-me-your-work`, taken from Michael Denyer's [Claude Code port](https://github.com/michael-denyer/pstack-claude). Sources, commits and local changes are in [vendor/pstack/PROVENANCE.md](vendor/pstack/PROVENANCE.md).
 - `writing-for-agents` from Matt Pocock's [skills](https://github.com/mattpocock/skills) (MIT). See [vendor/mattpocock-skills/PROVENANCE.md](vendor/mattpocock-skills/PROVENANCE.md).
+- `frontend-design` from Anthropic's [skills](https://github.com/anthropics/skills) (Apache-2.0), for page and UI design. See [vendor/anthropic-skills/PROVENANCE.md](vendor/anthropic-skills/PROVENANCE.md).
 
 ## License
 
