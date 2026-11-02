@@ -299,3 +299,8 @@ Replace every placeholder before creating state:
 - `{{BASELINE_REVISION}}`: observed branch and commit, or `DETACHED` plus commit.
 - `{{PROTECTED_DIRTY_PATHS}}`: explicit observed path list, or `[]`.
 - `{{BASELINE_CHECKS}}`: exact commands and fresh outcomes, including known pre-existing failures.
+- `{{NNNN}}`: next four-digit ADR number, in `templates/adr.md`.
+- `{{TITLE}}`: short title of the decision.
+- `{{CONTEXT}}`: the forces that make a decision needed now.
+- `{{DECISION}}`: the decision, in active voice.
+- `{{CONSEQUENCES}}`: what the decision makes easier or harder.
