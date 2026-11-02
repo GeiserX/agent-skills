@@ -1,6 +1,6 @@
 ---
 name: refine-loop
-description: Runs a safe, resumable refinement loop over a working repository. It discovers behavior-preserving improvements through four evidence-based lenses, ranks them by ROI, applies one small change at a time, verifies independently, and stops deterministically at diminishing returns or a safety limit. Use when explicitly asked to run refine-loop on an existing project.
+description: Use when Sergio asks to refine, polish, or keep improving a repo and no specific tasks remain.
 argument-hint: "[--continue] [--target=PATH] [--state-dir=PATH] [theta=N] [focus=LENS,...] <intent>"
 ---
 

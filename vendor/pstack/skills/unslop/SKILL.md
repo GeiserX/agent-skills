@@ -71,7 +71,7 @@ Unslop cuts words. It never cuts links. Every other rule here is about removing 
 
 20. **Chatbot phrases.** "I hope this helps!", "Let me know if...", "Of course!", "Certainly!", "Found the smoking gun!" Remove.
 21. **Cutoff disclaimers.** "While specific details are limited..." Find sources or remove.
-22. **Sycophantic tone.** "Great question! You're absolutely right!" Respond directly.
+22. **Sycophantic tone.** "Great question! You're absolutely right!" Respond directly. Also the quieter forms that grade the reader: "you're right", "fair point(s)", "good catch". Take the point and move on.
 
 ### Filler
 

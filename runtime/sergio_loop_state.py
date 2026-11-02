@@ -775,11 +775,74 @@ def tick(
             _terminate(state, "continuation_cap", current_time)
             _atomic_write_state(path, state)
             return False, None
+        # HOLD: the session declared itself waiting on background work. Allow the stop, spend no
+        # iteration; a task notification wakes the session, and expiry self-revives the loop even
+        # if every waiter dies. This exists because idle hook-bounces burn quota re-injecting the
+        # brief (measured 2026-08-31: 9 consecutive no-op blocks tripped the harness override).
+        hold_until = float(state.get("hold_until") or 0.0)
+        if hold_until > current_time:
+            if changed:
+                _atomic_write_state(path, state)
+            return False, None
+        if hold_until:
+            state["hold_until"] = 0.0
+            state["hold_reason"] = ""
+            changed = True
+        # BACKSTOP: four grants inside 240s means the model is bouncing hot without calling hold.
+        # Auto-hold 15 minutes rather than letting the harness's consecutive-block override fire.
+        grants = [g for g in state.get("recent_grants", []) if isinstance(g, (int, float)) and current_time - g < 240.0]
+        if len(grants) >= 4:
+            state["hold_until"] = current_time + 900.0
+            state["hold_reason"] = "auto-hold: hot idle spin (4 grants < 240s); notifications or expiry revive"
+            state["recent_grants"] = []
+            _atomic_write_state(path, state)
+            return False, None
         state["iteration"] += 1
         state["updated_at"] = current_time
+        grants.append(current_time)
+        state["recent_grants"] = grants[-5:]
         prompt = state["prompt"]
         _atomic_write_state(path, state)
         return True, prompt
+
+
+def hold_slot(
+    repo: str,
+    session_id: str,
+    seconds: int,
+    reason: str,
+    clear: bool,
+    *,
+    now: float | None = None,
+) -> dict[str, Any]:
+    """Declare the owning session idle-on-background-work (or clear that declaration).
+
+    Only the owning session may hold its own slot, a hold never spends an iteration, and the
+    TTL is clamped so a forgotten hold cannot park the loop for more than two hours."""
+    session_id = validate_session_id(session_id)
+    repo_root, git_common = discover_repository(repo)
+    directory = runtime_directory(create=False)
+    path = directory / f"{_repository_key(repo_root)}.json"
+    if not _path_exists_without_following(path):
+        raise StateError("no loop state for this repository")
+    current_time = time.time() if now is None else now
+    with _locked(repo_root):
+        state, _ = _normalize_state(_read_state(path), current_time)
+        _require_identity(state, repo_root, git_common)
+        if not state["active"]:
+            raise StateError("loop is not active")
+        if state["session_id"] != session_id:
+            raise StateError("session_id does not own this loop")
+        if clear:
+            state["hold_until"] = 0.0
+            state["hold_reason"] = ""
+        else:
+            clamped = min(7200, max(60, int(seconds)))
+            state["hold_until"] = current_time + clamped
+            state["hold_reason"] = reason[:300]
+        state["updated_at"] = current_time
+        _atomic_write_state(path, state)
+        return _public_state(state)
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -793,6 +856,12 @@ def _parser() -> argparse.ArgumentParser:
     start_parser.add_argument("--expires-in", type=int, default=21600)
     status_parser = commands.add_parser("status")
     status_parser.add_argument("--repo", required=True)
+    hold_parser = commands.add_parser("hold")
+    hold_parser.add_argument("--repo", required=True)
+    hold_parser.add_argument("--session-id", required=True)
+    hold_parser.add_argument("--seconds", type=int, default=900)
+    hold_parser.add_argument("--reason", default="")
+    hold_parser.add_argument("--clear", action="store_true")
     stop_parser = commands.add_parser("stop")
     stop_parser.add_argument("--repo", required=True)
     stop_parser.add_argument("--instance-id", required=True)
@@ -814,6 +883,14 @@ def main(argv: list[str] | None = None) -> int:
             )
         elif arguments.command == "status":
             result = status(arguments.repo)
+        elif arguments.command == "hold":
+            result = hold_slot(
+                arguments.repo,
+                arguments.session_id,
+                arguments.seconds,
+                arguments.reason,
+                arguments.clear,
+            )
         else:
             result = stop(
                 arguments.repo,
