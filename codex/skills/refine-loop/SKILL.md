@@ -1,6 +1,6 @@
 ---
 name: refine-loop
-description: Runs a safe, resumable refinement loop over a working repository. It discovers behavior-preserving improvements through four evidence-based lenses, ranks them by ROI, applies one small change at a time, verifies independently, and stops deterministically at diminishing returns or a safety limit. Use when explicitly asked to run refine-loop on an existing project.
+description: Use when Sergio asks to refine, polish, or keep improving a repo and no specific tasks remain.
 argument-hint: "[--continue] [--target=PATH] [--state-dir=PATH] [theta=N] [focus=LENS,...] <intent>"
 ---
 
@@ -314,3 +314,8 @@ Replace every placeholder before creating state:
 - `{{BASELINE_REVISION}}`: observed branch and commit, or `DETACHED` plus commit.
 - `{{PROTECTED_DIRTY_PATHS}}`: explicit observed path list, or `[]`.
 - `{{BASELINE_CHECKS}}`: exact commands and fresh outcomes, including known pre-existing failures.
+- `{{NNNN}}`: next four-digit ADR number, in `templates/adr.md`.
+- `{{TITLE}}`: short title of the decision.
+- `{{CONTEXT}}`: the forces that make a decision needed now.
+- `{{DECISION}}`: the decision, in active voice.
+- `{{CONSEQUENCES}}`: what the decision makes easier or harder.
