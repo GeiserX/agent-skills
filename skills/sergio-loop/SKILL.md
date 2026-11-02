@@ -312,6 +312,11 @@ Replace every placeholder before creating a file:
 - `{{REVERSIBLE_DEFAULT}}`: chosen reversible default, or `none`.
 - `{{ROLLBACK_PATH}}`: exact reversal/change procedure, or `none`.
 - `{{ANSWER_NEEDED}}`: exact decision required from a human.
+- `{{REPO}}`: repository name, in `templates/PROGRESS.md`.
+- `{{FIRST_CAPABILITY}}`: first capability row, with its status and evidence.
+- `{{REMAINING}}`: first item that remains and does not block the proven goal.
+- `{{FIRST_SURFACE}}`: first frozen surface, in the optional `templates/CONTRACT.md`.
+- `{{FIRST_INVARIANT}}`: first invariant that surface promises.
 
 Leave no literal placeholder in a created file. `templates/COORDINATE.md` has no placeholders; append the
 first observed `JOIN` entry after safe creation.
