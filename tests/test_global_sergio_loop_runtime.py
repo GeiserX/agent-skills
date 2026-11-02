@@ -9,6 +9,7 @@ import stat
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from pathlib import Path
 
@@ -64,6 +65,16 @@ class GlobalSergioLoopRuntimeTests(unittest.TestCase):
 
     def read_state(self, repo: Path | None = None) -> dict[str, object]:
         return json.loads(self.state_path(repo).read_text(encoding="utf-8"))
+
+    def forget_recent_grants(self, repo: Path | None = None) -> None:
+        # The hot-spin backstop auto-holds after four continuations inside 240 s. Tests about the budget and
+        # the lock fire continuations back to back, so they clear its record between ticks; the backstop's
+        # own test leaves it alone. A hold the backstop already set is cleared with it.
+        state = self.read_state(repo)
+        state["recent_grants"] = []
+        state["hold_until"] = 0.0
+        state["hold_reason"] = ""
+        state_runtime._atomic_write_state(self.state_path(repo), state)
 
     def start_loop(
         self,
@@ -302,7 +313,10 @@ class GlobalSergioLoopRuntimeTests(unittest.TestCase):
         started = self.start_loop(max_iter=8)
         self.assertEqual(8, started["max_iterations"])
 
-        results = [self.run_stop_hook()[0] for _ in range(9)]
+        results = []
+        for _ in range(9):
+            results.append(self.run_stop_hook()[0])
+            self.forget_recent_grants()
 
         for result in results[:8]:
             self.assertEqual("block", json.loads(result.stdout)["decision"])
@@ -312,6 +326,20 @@ class GlobalSergioLoopRuntimeTests(unittest.TestCase):
         self.assertFalse(state["active"])
         self.assertEqual("continuation_cap", state["terminal_reason"])
         self.assertEqual("", state["prompt"])
+
+    def test_hot_spin_auto_holds_after_four_quick_continuations(self) -> None:
+        self.start_loop(max_iter=8)
+
+        results = [self.run_stop_hook()[0] for _ in range(5)]
+
+        for result in results[:4]:
+            self.assertEqual("block", json.loads(result.stdout)["decision"])
+        self.assert_allow(results[4])
+        state = self.read_state()
+        self.assertEqual(4, state["iteration"])
+        self.assertTrue(state["active"])
+        self.assertGreater(float(state["hold_until"]), time.time())
+        self.assertTrue(str(state["hold_reason"]).startswith("auto-hold"))
 
     def test_busy_lock_fails_open_in_hook_and_closed_in_cli(self) -> None:
         self.start_loop()
@@ -695,6 +723,7 @@ class GlobalSergioLoopRuntimeTests(unittest.TestCase):
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
             results = list(executor.map(invoke, range(8)))
+        self.forget_recent_grants()
 
         outputs = [json.loads(result.stdout) for result in results]
         blocked = sum(output.get("decision") == "block" for output in outputs)
@@ -709,6 +738,7 @@ class GlobalSergioLoopRuntimeTests(unittest.TestCase):
         for _ in range(8 - blocked):
             result, output = self.run_stop_hook()
             self.assertEqual("block", output["decision"], result.stderr.decode())
+            self.forget_recent_grants()
         self.assertEqual(8, self.read_state()["iteration"])
         ninth, _ = self.run_stop_hook()
         self.assert_allow(ninth)
