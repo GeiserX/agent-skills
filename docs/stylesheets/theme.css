@@ -3,7 +3,7 @@
  * banner.svg draws "agent-skills" in #fdf6e3 on a #0f3b3d plate, the caption
  * in #9fe0d0, and the mark as a pocket knife with a #d62b2b handle. The
  * header and the dark page use the plate colour, links and card borders the
- * caption colour, and the one filled button the handle red. mkdocs.yml sets
+ * caption colour, and the one filled button the handle red. zensical.toml sets
  * primary and accent to custom, so nothing is painted until these exist.
  */
 :root {
@@ -46,9 +46,15 @@
    wordmark colour. Only the first topic is styled; Material puts the page
    title in a second .md-header__topic and swaps them on scroll. */
 .md-header__topic:first-child .md-ellipsis {
-  color: #fdf6e3;
   font-weight: 800;
   letter-spacing: -0.01em;
+}
+
+/* That colour only on the dark scheme: Zensical's modern header takes the page
+   background, so on the light scheme it is white and a light name would vanish.
+   There the name keeps the default text colour. */
+[data-md-color-scheme="slate"] .md-header__topic:first-child .md-ellipsis {
+  color: #fdf6e3;
 }
 
 /* Keep the mark and the name close, so they read as one unit. */
