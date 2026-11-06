@@ -99,10 +99,15 @@ def read_config(path: Path, errors: set[str]) -> dict:
         errors.add(f"{path}: config file not found (run from the repository root, or pass its path)")
         return {}
     try:
-        return tomllib.loads(path.read_text(encoding="utf-8")).get("project", {})
+        project = tomllib.loads(path.read_text(encoding="utf-8")).get("project")
     except (tomllib.TOMLDecodeError, UnicodeDecodeError) as e:
         errors.add(f"{path}: not valid TOML: {e}")
         return {}
+    # Every config check reads [project]: without it they would all pass by skipping.
+    if not isinstance(project, dict) or not project:
+        errors.add(f"{path}: no [project] table, so no config check can run")
+        return {}
+    return project
 
 
 def main(site_dir: str, config_path: str) -> int:
