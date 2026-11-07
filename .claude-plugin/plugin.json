@@ -1,0 +1,21 @@
+{
+  "name": "sstack",
+  "version": "1.1.0",
+  "description": "sergio stack: skills for Claude Code that drive a repository to done, review and investigate in parallel, and ship it.",
+  "author": {
+    "name": "GeiserX",
+    "url": "https://github.com/GeiserX"
+  },
+  "homepage": "https://geiserx.github.io/sstack/",
+  "repository": "https://github.com/GeiserX/sstack",
+  "license": "GPL-3.0-or-later",
+  "keywords": [
+    "skills",
+    "claude-code",
+    "codex",
+    "agent-loop",
+    "code-review"
+  ],
+  "icon": "./.claude-plugin/icon.png",
+  "skills": "./skills/"
+}
