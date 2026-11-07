@@ -3,21 +3,21 @@ hide:
   - navigation
 ---
 
-# agent-skills { .as-visually-hidden }
+# sstack { .as-visually-hidden }
 
 <p align="center">
-  <img src="images/banner.svg" alt="agent-skills: many agents, one command, all at once" width="100%">
+  <img src="images/banner.svg" alt="sstack: many agents, one command, all at once" width="100%">
 </p>
 
 <p align="center">
-  <a href="https://github.com/GeiserX/agent-skills/stargazers"><img alt="GitHub Stars" src="https://img.shields.io/github/stars/GeiserX/agent-skills?style=flat-square&logo=github"></a>
-  <a href="https://github.com/GeiserX/agent-skills/releases"><img alt="Release" src="https://img.shields.io/github/v/release/GeiserX/agent-skills?style=flat-square"></a>
-  <a href="https://github.com/GeiserX/agent-skills/blob/main/LICENSE"><img alt="License: GPL-3.0-or-later" src="https://img.shields.io/github/license/GeiserX/agent-skills?style=flat-square"></a>
+  <a href="https://github.com/GeiserX/sstack/stargazers"><img alt="GitHub Stars" src="https://img.shields.io/github/stars/GeiserX/sstack?style=flat-square&logo=github"></a>
+  <a href="https://github.com/GeiserX/sstack/releases"><img alt="Release" src="https://img.shields.io/github/v/release/GeiserX/sstack?style=flat-square"></a>
+  <a href="https://github.com/GeiserX/sstack/blob/main/LICENSE"><img alt="License: GPL-3.0-or-later" src="https://img.shields.io/github/license/GeiserX/sstack?style=flat-square"></a>
 </p>
 
 ---
 
-**agent-skills** is a set of skills for [Claude Code](https://claude.com/claude-code) and [Codex](https://developers.openai.com/codex). Left alone, an agent works until its turn ends and then reviews its own change. The goal loop keeps its state outside the session, so it picks up where it stopped, and a fresh reviewer checks each slice before the next one starts. The parallel skills put several independent agents on one bug, pull request, codebase or question, and keep only the findings that hold up against the code. Other skills grow a repository, file pull requests, draft replies, recover cut-off work and explain. Start with [Getting started](getting-started.md), then [Usage](usage.md).
+**sstack** (sergio stack) is a set of skills for [Claude Code](https://claude.com/claude-code) and [Codex](https://developers.openai.com/codex). Left alone, an agent works until its turn ends and then reviews its own change. The goal loop keeps its state outside the session, so it picks up where it stopped, and a fresh reviewer checks each slice before the next one starts. The parallel skills put several independent agents on one bug, pull request, codebase or question, and keep only the findings that hold up against the code. Other skills grow a repository, file pull requests, draft replies, recover cut-off work and explain. Start with [Getting started](getting-started.md), then [Usage](usage.md).
 
 <div class="grid cards" markdown>
 
@@ -121,10 +121,10 @@ flowchart LR
 
 ## Getting help
 
-- Something broken: open an [issue](https://github.com/GeiserX/agent-skills/issues) with the skill, whether it ran in Claude Code or Codex, the version, and what it printed.
-- A security problem: follow the [security policy](https://github.com/GeiserX/agent-skills/blob/main/SECURITY.md), never a public issue.
+- Something broken: open an [issue](https://github.com/GeiserX/sstack/issues) with the skill, whether it ran in Claude Code or Codex, the version, and what it printed.
+- A security problem: follow the [security policy](https://github.com/GeiserX/sstack/blob/main/SECURITY.md), never a public issue.
 - Validating a skill, rebuilding the Codex copies and running the tests: [Development](development.md). The skills from other projects kept here, and the repository this one replaced: [Related projects](related.md).
 
 ## License
 
-agent-skills is released under the [GPL-3.0-or-later](https://github.com/GeiserX/agent-skills/blob/main/LICENSE) license. The skills under `vendor/` keep their own MIT licences.
+sstack is released under the [GPL-3.0-or-later](https://github.com/GeiserX/sstack/blob/main/LICENSE) license. The skills under `vendor/` keep their own MIT licences.

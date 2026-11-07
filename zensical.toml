@@ -2,11 +2,11 @@
 # new-repo/templates/zensical.toml. Edit this file, not mkdocs.yml, which is gone.
 
 [project]
-site_name = "agent-skills"
-site_url = "https://geiserx.github.io/agent-skills/"
-site_description = "Skills for Claude Code and Codex. Durable loops, parallel review and investigation, knowledge-base answers, and skills to grow a repository, file pull requests and recover cut-off work."
-repo_url = "https://github.com/GeiserX/agent-skills"
-repo_name = "GeiserX/agent-skills"
+site_name = "sstack"
+site_url = "https://geiserx.github.io/sstack/"
+site_description = "sergio stack: skills for Claude Code and Codex. Durable loops, parallel review and investigation, knowledge-base answers, and skills to grow a repository, file pull requests and recover cut-off work."
+repo_url = "https://github.com/GeiserX/sstack"
+repo_name = "GeiserX/sstack"
 edit_uri = "edit/main/docs/"
 strict = true
 extra_css = ["stylesheets/theme.css"]
@@ -70,7 +70,7 @@ toggle.name = "Switch to dark mode"
 
 [[project.extra.social]]
 icon = "fontawesome/brands/github"
-link = "https://github.com/GeiserX/agent-skills"
+link = "https://github.com/GeiserX/sstack"
 
 [project.plugins.search]
 
