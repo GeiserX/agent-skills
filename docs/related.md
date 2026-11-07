@@ -2,7 +2,7 @@
 
 ## Skills from other projects
 
-`vendor/` holds skills written by other people, kept as pinned snapshots with their MIT licences. The installer in [Getting started](getting-started.md) does not link them. Link the ones you want the same way, from the repository root:
+`vendor/` holds skills written by other people, kept as pinned snapshots with their licences. Neither the plugin nor the installer in [Getting started](getting-started.md) links them. Link the ones you want the same way, from the repository root:
 
 ```bash
 ln -s "$PWD/vendor/pstack/skills/<name>" ~/.claude/skills/<name>

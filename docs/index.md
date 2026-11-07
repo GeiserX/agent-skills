@@ -25,7 +25,7 @@ hide:
 
     ---
 
-    Link the skills into Claude Code or Codex, install the Stop hook, and add its two `settings.json` entries.
+    Install the Claude Code plugin, or link the skills into Claude Code or Codex with one script, and add the Stop hook.
 
 -   :material-refresh: **[Your first goal loop](usage.md#how-to-use-the-goal-loop)**
 
@@ -49,31 +49,61 @@ hide:
 
 ## The skills
 
+### Loops
+
 | Skill | What it does |
 |---|---|
+| [`full-loop`](usage.md#full-loop) | Runs `sergio-loop` until nothing is pending, then `refine-loop` at a falling theta. |
 | [`sergio-loop`](usage.md#goal-loop-sergio-loop) | Drives one repository toward a goal, one small slice at a time, and resumes after a stop. |
 | [`refine-loop`](usage.md#refine-loop) | Makes one small improvement per round that keeps behavior the same, ranked by ROI and checked by a fresh reviewer. |
 | [`docs-loop`](usage.md#docs-loop) | Audits documentation against the default branch: a dry run, staged edits, or one pull request per repository. |
+
+### Parallel work
+
+| Skill | What it does |
+|---|---|
 | [`investigate`](usage.md#parallel-skills) | Reproduces a failure and tests competing hypotheses until one root cause holds. |
 | [`review-pr`](usage.md#parallel-skills) | Reviews pull requests in one Workflow run (right problem, robust, usable by us), comments the plan, pushes the fixes, then merges or closes. |
 | [`review-code`](usage.md#parallel-skills) | Audits a repository in waves and publishes every verified finding, ranked by severity. |
 | [`research`](usage.md#parallel-skills) | Answers a question from the code, its history and primary sources, with a source for each claim. |
 | [`implement`](usage.md#parallel-skills) | Makes the smallest complete change, giving each parallel writer its own files. |
+
+### Knowledge base
+
+| Skill | What it does |
+|---|---|
 | [`kb-research`](usage.md#knowledge-base-skills) | Answers from your team's record, read-only, each claim with the anchor it was read from. |
 | [`kb-review`](usage.md#knowledge-base-skills) | Reviews a pull request with the learnings your reviewers recorded, and reports only. |
+
+### Shipping and growth
+
+| Skill | What it does |
+|---|---|
+| [`file-pr`](usage.md#pull-requests-and-replies) | Opens a pull request whose title says why the change matters and whose body starts with the problem. |
+| [`github-video-embed`](usage.md#pull-requests-and-replies) | Uploads a video as a GitHub attachment so it plays inline in a doc or pull request. |
 | [`grow-my-repo`](usage.md#growing-a-repository) | Plans where an open-source repository gets listed and does the submissions an agent may do. |
 | [`submit-awesome`](usage.md#growing-a-repository) | Sends one entry to each fitting awesome list, by that list's own rules. |
-| [`file-pr`](usage.md#pull-requests-and-replies) | Opens a pull request whose title says why the change matters and whose body starts with the problem. |
+
+### Communication
+
+| Skill | What it does |
+|---|---|
 | [`verified-reply`](usage.md#pull-requests-and-replies) | Drafts a reply you send as yourself, with every claim checked against a live source. |
-| [`revive`](usage.md#reviving-cut-off-work) | Brings work cut off by a limit, a crash or a compaction back from its real edge, without doing anything twice. |
 | [`eli5`](usage.md#explaining-and-deciding) | Explains work, a system or a situation in plain words with real names. |
 | [`help-decide`](usage.md#explaining-and-deciding) | Lays a decision out so one word answers it: recommendation and pros and cons first. |
+
+### Recovery
+
+| Skill | What it does |
+|---|---|
+| [`revive`](usage.md#reviving-cut-off-work) | Brings work cut off by a limit, a crash or a compaction back from its real edge, without doing anything twice. |
 
 ## What you type
 
 In Claude Code a skill is `/<name>`; in Codex it is `$<name>`. These are the examples from [Usage](usage.md):
 
 ```text
+/full-loop <goal>
 /sergio-loop --coordinate --max-iterations=20 <goal>
 /refine-loop theta=1.5 focus=usability,refactoring <intent>
 /docs-loop --apply REPO_PATH ...
@@ -111,7 +141,7 @@ flowchart LR
 - `/grow-my-repo` and `/submit-awesome` never star, vote, or answer a question about how something was made on your behalf. Where a place wants a human, they hand you a packet.
 - The parallel skills (except `review-pr`), the knowledge-base skills, `grow-my-repo` and `submit-awesome` never start on their own; the model can only run them when you name them. The loops' descriptions tell the model the same.
 - The knowledge-base skills bring no knowledge base. You describe yours in `references/knowledge-base.md`, and they stop and ask while it still has placeholders.
-- The installer links only this repository's own skills. The skills from other projects under `vendor/` are listed on [Related projects](related.md).
+- The plugin, `npx skills` and the installer cover only this repository's own skills. The skills from other projects under `vendor/` are listed on [Related projects](related.md).
 
 ## How the repository is laid out
 
@@ -127,4 +157,4 @@ flowchart LR
 
 ## License
 
-sstack is released under the [GPL-3.0-or-later](https://github.com/GeiserX/sstack/blob/main/LICENSE) license. The skills under `vendor/` keep their own MIT licences.
+sstack is released under the [GPL-3.0-or-later](https://github.com/GeiserX/sstack/blob/main/LICENSE) license. The skills under `vendor/` keep their own licences.

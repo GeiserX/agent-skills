@@ -46,6 +46,20 @@ fresh-reviews the smallest unfinished slice without invoking nested slash comman
 5. The Stop hook is inert in repositories without an active goal loop and ignores other Claude sessions in
    the same repository.
 
+## `/full-loop`
+
+Runs [`sergio-loop`](#goal-loop-sergio-loop) on a goal until nothing is pending, then [`refine-loop`](#refine-loop)
+with theta stepping down toward 0, one pass per level. "Nothing is pending" is a check with evidence: no
+ready work in the issue tracker, no open question in `docs/DEFERRED-QUESTIONS.md` that a resolution pass
+could close, every satisfied request reported back, and the goal's acceptance criteria passed fresh
+verification and an independent review. With no goal it continues whatever the repository says is
+unfinished. It is called `full-loop` because Claude Code already has a built-in `/loop`.
+
+```text
+/full-loop <goal>
+/full-loop
+```
+
 ## `/refine-loop`
 
 A resumable loop for small improvements that preserve the observable behavior of an already working
@@ -185,6 +199,11 @@ your behalf.
 - [`verified-reply`](https://github.com/GeiserX/sstack/blob/main/skills/verified-reply/SKILL.md) drafts a reply you will send as yourself: it lists every claim the reply needs, checks each
   against a live source, drafts two to four lines in your voice, and hands you the reply with a source per claim.
   It posts only the exact text you approve, then reads the posted item back.
+- [`github-video-embed`](https://github.com/GeiserX/sstack/blob/main/skills/github-video-embed/SKILL.md) gets a
+  video to play inline in a GitHub Markdown file or pull request. Only a `user-attachments` URL renders a player,
+  so it uploads the file through a signed-in browser session on a classic Markdown editor page (without saving
+  anything), puts the bare URL on its own line, counts the players on the rendered page, and deletes the
+  exported cookies.
 
 ```text
 /file-pr
