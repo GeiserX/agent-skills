@@ -1,7 +1,8 @@
 name: CI
 
 # Runs the checks docs/development.md lists: the skill validator, the loop
-# contract check and the unit tests. Python standard library only.
+# contract check, the installer lint and the unit tests. Python standard
+# library only, plus the shellcheck that ships on the runner image.
 on:
   push:
     branches:
@@ -29,11 +30,16 @@ jobs:
         with:
           python-version: '3.13'
 
-      - name: Validate the skill packages
-        run: python3 scripts/validate_skills.py skills
+      - name: Validate the skill packages, the README table and the plugin manifests
+        run: python3 scripts/validate_skills.py skills --repo .
 
       - name: Check the loops package the shared contract
         run: python3 scripts/validate_skills.py skills/*-loop --contract shared/loop-contract.md
+
+      - name: Lint the installer
+        run: |
+          bash -n scripts/install.sh
+          shellcheck scripts/install.sh
 
       - name: Unit tests
         run: python3 -m unittest discover -s tests -v
