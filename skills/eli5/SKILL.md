@@ -1,20 +1,20 @@
 ---
 name: eli5
-description: Explain work, a system or a situation to Sergio in plain words with real names, so he understands it on one read. Use when he asks to explain like a 5yo, says eli5, or says he does not understand what was done or where things stand.
+description: Explain work, a system or a situation to the user in plain words with real names, so they understand it on one read. Use when the user asks to explain like a 5yo, says eli5, or says they do not understand what was done or where things stand.
 ---
 
 # eli5
 
-Sergio reads this when he has lost the thread. He wants to understand, not to be impressed. Simplify the telling, never the claims: every sentence stays true to the code, the calls and the messages, and the words get shorter, not the facts.
+The user reads this after losing the thread. They want to understand, not to be impressed. Simplify the telling, never the claims: every sentence stays true to the code, the calls and the messages, and the words get shorter, not the facts.
 
 ## The shape of the answer
 
 Two layers, in this order.
 
-1. **The short version, under 200 words.** The whole story: who is involved, what the goal is, what was done, where it stands, what is open. Written so that it stands alone if he reads nothing else.
-2. **The detailed version.** The same story told fully, in the sections below, each under its own heading so he can stop at any point and still have a complete picture up to there.
+1. **The short version, under 200 words.** The whole story: who is involved, what the goal is, what was done, where it stands, what is open. Written so that it stands alone if they read nothing else.
+2. **The detailed version.** The same story told fully, in the sections below, each under its own heading so they can stop at any point and still have a complete picture up to there.
 
-Close with a `Summary` of three or four bullets: the state, the open decisions, and what is his to do.
+Close with a `Summary` of three or four bullets: the state, the open decisions, and what is theirs to do.
 
 ## The sections of the detailed version
 
@@ -41,10 +41,10 @@ Write them in this order. Each section answers one question a person asks when t
 - Concrete over abstract. Say what the person sees, what the program reads, where the bytes go. When an abstract word appears (layer, surface, mechanism, flow), replace it with the thing it stands for.
 - Explain with real technical examples: the actual request, the actual file, the actual message. Figurative language is excluded in full: no analogies, no metaphors, no comparisons to everyday objects or other products as a way of explaining. If a comparison to another product is a fact of the design, state it as a fact of the design and move on.
 - Prose and numbered lists only. The answer is text in the conversation, never a page, a diagram file or an artifact.
-- Cite where it matters: a `file:line`, a pull request number, a call or message anchor, so he can check the claim.
+- Cite where it matters: a `file:line`, a pull request number, a call or message anchor, so they can check the claim.
 - Minimizers are out: simply, just, obviously, basically, of course, as you know.
 - Separate what exists today from what is proposed, and what was observed from what is inferred. Say which is which.
 
 ## Before sending
 
-Read the answer once as someone who was away for a week. Every name must have been introduced before it is used. Every claim must be one he could check. If a sentence needs the reader to already know the code, it is not finished.
+Read the answer once as someone who was away for a week. Every name must have been introduced before it is used. Every claim must be one they could check. If a sentence needs the reader to already know the code, it is not finished.
