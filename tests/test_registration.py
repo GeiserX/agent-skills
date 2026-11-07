@@ -164,6 +164,14 @@ class RegistrationTests(unittest.TestCase):
         self.assertEqual([], registration.ensure_registration())
         self.assertEqual(([], []), registration.audit())
 
+    def test_the_default_accounts_directory_is_generic(self) -> None:
+        os.environ.pop(registration.ACCOUNTS_DIRECTORY_ENV, None)
+
+        self.assertEqual(
+            Path(os.path.expanduser("~/.config/sstack/accounts")),
+            registration.accounts_directory(),
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

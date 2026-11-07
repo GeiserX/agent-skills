@@ -14,8 +14,9 @@ Start only after core state initialization succeeds:
 python3 ~/.claude/hooks/sergio_loop_state.py start --repo <CANONICAL_REPOSITORY> --session-id "${SERGIO_CLAUDE_SESSION_ID:-$CLAUDE_CODE_SESSION_ID}" --prompt-file <MODE_0600_PROMPT_FILE> --max-iter <STOP_CONTINUATION_LIMIT> --expires-in 21600
 ```
 
-Claude Code permits at most eight consecutive Stop-hook blocks, so the stop continuation limit cannot
-exceed `8`. Record the returned instance ID. Stop that exact session-bound instance on every terminal
+The state runtime clamps the stop continuation limit to `10000` (`MAX_STOP_CONTINUATIONS` in
+`sergio_loop_state.py`). That is the loop's own budget; Claude Code may stop honouring a Stop hook after
+its own number of consecutive blocks, and `/sergio-loop` with no goal resumes after that. Record the returned instance ID. Stop that exact session-bound instance on every terminal
 outcome:
 
 ```text

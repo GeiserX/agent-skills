@@ -83,7 +83,7 @@ Stop after at most 25 audit/repair rounds. Stop with `NO_PROGRESS` after 3 conse
 ### Applied repair waves
 - [round] [files, findings fixed, verification]
 ### Behavior-changing handoffs
-- [goal-loop or investigate brief with acceptance criteria]
+- [sergio-loop or investigate brief with acceptance criteria]
 ### Remaining backlog
 - [must-fix blocked items, below-ROI items, unresolved evidence]
 ### Terminal state

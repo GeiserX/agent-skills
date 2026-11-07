@@ -1,6 +1,6 @@
 ---
 name: refine-loop
-description: Use when Sergio asks to refine, polish, or keep improving a repo and no specific tasks remain.
+description: Use when the user asks to refine, polish, or keep improving a repo and no specific tasks remain.
 argument-hint: "[--continue] [--target=PATH] [--state-dir=PATH] [theta=N] [focus=LENS,...] <intent>"
 ---
 

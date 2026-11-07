@@ -87,7 +87,9 @@ class Validator:
         roots: Sequence[Path],
         manifest: Path | None = None,
         contract: Path | None = None,
+        repo: Path | None = None,
     ) -> None:
+        self.repo = repo.absolute() if repo else None
         self.roots = tuple(sorted({Path(root).absolute() for root in roots}, key=str))
         self.manifest = manifest.absolute() if manifest else None
         self.contract = contract.absolute() if contract else None
@@ -117,6 +119,9 @@ class Validator:
             self._validate_manifest(self.manifest)
         if self.contract:
             self._validate_shared_contract(self.contract)
+        if self.repo:
+            self._validate_readme_rows(self.repo)
+            self._validate_plugin_manifest(self.repo)
         self._validate_bash_fences()
         if not self.shellcheck:
             self.add(
@@ -152,6 +157,65 @@ class Validator:
                     "loop-contract-drift",
                     "package-local loop contract differs from the canonical contract",
                 )
+
+    def _validate_readme_rows(self, repo: Path) -> None:
+        """Every skill in <repo>/skills has a table row in README.md whose first cell names it."""
+        readme = repo / "README.md"
+        text = self._read_text(readme)
+        if text is None:
+            return
+        named = set()
+        for line in text.splitlines():
+            if line.lstrip().startswith("|"):
+                cells = line.strip().strip("|").split("|")
+                named.update(re.findall(r"`/?([a-z0-9][a-z0-9-]*)`", cells[0]))
+        skills_dir = repo / "skills"
+        if not skills_dir.is_dir():
+            return
+        for skill in sorted(skills_dir.iterdir()):
+            if (skill / "SKILL.md").is_file() and skill.name not in named:
+                self.add(
+                    "ERROR",
+                    readme,
+                    0,
+                    "readme-row",
+                    f"README.md has no skills table row for {skill.name}",
+                )
+
+    def _validate_plugin_manifest(self, repo: Path) -> None:
+        """The plugin and its marketplace entry carry one version, and skills point at ./skills/."""
+        plugin_path = repo / ".claude-plugin" / "plugin.json"
+        market_path = repo / ".claude-plugin" / "marketplace.json"
+        try:
+            plugin = json.loads(plugin_path.read_text(encoding="utf-8"))
+            market = json.loads(market_path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeError, json.JSONDecodeError) as error:
+            self.add("ERROR", plugin_path.parent, 0, "plugin-version", f"cannot read plugin manifests: {error}")
+            return
+        if not isinstance(plugin, dict) or not isinstance(market, dict):
+            self.add("ERROR", plugin_path, 0, "plugin-version", "plugin manifests must be JSON objects")
+            return
+        name, version = plugin.get("name"), plugin.get("version")
+        entries = [
+            entry
+            for entry in market.get("plugins", [])
+            if isinstance(entry, dict) and entry.get("name") == name
+        ]
+        if not version:
+            self.add("ERROR", plugin_path, 0, "plugin-version", "plugin.json has no version")
+        if len(entries) != 1:
+            self.add("ERROR", market_path, 0, "plugin-version", f"marketplace.json must list {name!r} exactly once")
+        elif entries[0].get("version") != version:
+            self.add(
+                "ERROR",
+                market_path,
+                0,
+                "plugin-version",
+                f"marketplace version {entries[0].get('version')!r} differs from plugin.json {version!r}",
+            )
+        skills = plugin.get("skills")
+        if not isinstance(skills, str) or skills.rstrip("/") != "./skills" or not (repo / "skills").is_dir():
+            self.add("ERROR", plugin_path, 0, "plugin-version", 'plugin.json "skills" must be "./skills/"')
 
     def _scan_root(self, root: Path) -> None:
         # SECURITY-REVIEW: Roots are untrusted CLI paths; lstat and scandir are used
@@ -1145,6 +1209,11 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         help="canonical loop contract that every scanned skill must package byte-for-byte",
     )
+    parser.add_argument(
+        "--repo",
+        type=Path,
+        help="repository root: also check the README skills table and the plugin manifests",
+    )
     return parser
 
 
@@ -1169,7 +1238,7 @@ def render(findings: Iterable[Finding], skill_count: int) -> str:
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    validator = Validator(args.roots, args.manifest, args.contract)
+    validator = Validator(args.roots, args.manifest, args.contract, args.repo)
     findings = validator.validate()
     print(render(findings, len(validator.skills)))
     return 1 if any(finding.severity == "ERROR" for finding in findings) else 0

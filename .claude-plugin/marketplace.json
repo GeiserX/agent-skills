@@ -1,0 +1,17 @@
+{
+  "name": "sstack",
+  "description": "GeiserX's skills for Claude Code: durable loops, parallel review and investigation, and shipping.",
+  "owner": {
+    "name": "GeiserX"
+  },
+  "plugins": [
+    {
+      "name": "sstack",
+      "source": "./",
+      "description": "sergio stack: skills for Claude Code that drive a repository to done, review and investigate in parallel, and ship it.",
+      "version": "1.1.0",
+      "category": "developer-tools",
+      "homepage": "https://geiserx.github.io/sstack/"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 /* docs/stylesheets/theme.css: the site takes its colours from the banner.
  *
- * banner.svg draws "agent-skills" in #fdf6e3 on a #0f3b3d plate, the caption
+ * banner.svg draws "sstack" in #fdf6e3 on a #0f3b3d plate, the caption
  * in #9fe0d0, and the mark as a pocket knife with a #d62b2b handle. The
  * header and the dark page use the plate colour, links and card borders the
  * caption colour, and the one filled button the handle red. zensical.toml sets
@@ -107,7 +107,7 @@
 
 /* The home page keeps an H1 for search, screen readers and the browser tab.
    The banner under it already shows the name, so the H1 is hidden visually.
-   Use it as: # agent-skills { .as-visually-hidden } */
+   Use it as: # sstack { .as-visually-hidden } */
 .md-typeset h1.as-visually-hidden {
   position: absolute;
   width: 1px;

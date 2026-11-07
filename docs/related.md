@@ -2,19 +2,26 @@
 
 ## Skills from other projects
 
-`vendor/` holds skills written by other people, kept as pinned snapshots with their MIT licences. The installer in [Getting started](getting-started.md) does not link them. Link the ones you want the same way, from the repository root:
+`vendor/` holds skills written by other people, kept as pinned snapshots with their licences. Neither the plugin nor the installer in [Getting started](getting-started.md) links them. Link the ones you want the same way, from the repository root:
 
 ```bash
 ln -s "$PWD/vendor/pstack/skills/<name>" ~/.claude/skills/<name>
 ```
 
-- **pstack**, from [cursor/plugins](https://github.com/cursor/plugins/tree/main/pstack) through its Claude Code port: 52 skills and 2 agents, such as `unslop`, `blast-radius` and `show-me-your-work`. The source commits, the local changes and the skills not to enable are in [vendor/pstack/PROVENANCE.md](https://github.com/GeiserX/agent-skills/blob/main/vendor/pstack/PROVENANCE.md).
-- **writing-for-agents**, one skill copied unchanged from a public skills collection. The source, the commit and the licence are in [vendor/mattpocock-skills/PROVENANCE.md](https://github.com/GeiserX/agent-skills/blob/main/vendor/mattpocock-skills/PROVENANCE.md).
-- **frontend-design**, Anthropic's skill for page and UI design, copied unchanged. The source, the commit and the licence are in [vendor/anthropic-skills/PROVENANCE.md](https://github.com/GeiserX/agent-skills/blob/main/vendor/anthropic-skills/PROVENANCE.md).
+- **pstack**, from [cursor/plugins](https://github.com/cursor/plugins/tree/main/pstack) through its Claude Code port: 52 skills and 2 agents, such as `unslop`, `blast-radius` and `show-me-your-work`. The source commits, the local changes and the skills not to enable are in [vendor/pstack/PROVENANCE.md](https://github.com/GeiserX/sstack/blob/main/vendor/pstack/PROVENANCE.md).
+- **writing-for-agents**, one skill copied unchanged from a public skills collection. The source, the commit and the licence are in [vendor/mattpocock-skills/PROVENANCE.md](https://github.com/GeiserX/sstack/blob/main/vendor/mattpocock-skills/PROVENANCE.md).
+- **frontend-design**, Anthropic's skill for page and UI design, copied unchanged. The source, the commit and the licence are in [vendor/anthropic-skills/PROVENANCE.md](https://github.com/GeiserX/sstack/blob/main/vendor/anthropic-skills/PROVENANCE.md).
+
+## Skills shipped with my other projects
+
+These skills live with the tool they drive, so they are linked here rather than copied:
+
+- [akou](https://github.com/GeiserX/akou) ships `akou` (record a call and answer questions about it while it runs, or transcribe a file) and `akou-vocab` (teach it the names and terms a recording should spell right).
+- [unsent](https://github.com/GeiserX/unsent) ships `unsent-context`, which fills in the context of the prompts you sent.
 
 ## Earlier repositories
 
-- This repository was called `claude-skills`. GitHub redirects the old URLs here.
+- This repository was called `claude-skills`, then `agent-skills` until 2026-11-07. GitHub redirects the old repository URLs here. The old documentation site at `geiserx.github.io/agent-skills` does not redirect: GitHub Pages project sites never do, so use https://geiserx.github.io/sstack/ instead.
 - [claude-code-parallel-skills](https://github.com/GeiserX/claude-code-parallel-skills) held the parallel skills before, as `/review-pr!` and the like, and needed oh-my-claudecode. It is archived; the skills now live here without the `!` and without that dependency.
 
 ## Where the skill formats are documented

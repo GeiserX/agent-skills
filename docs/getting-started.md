@@ -1,74 +1,51 @@
 # Getting started
 
-Each skill is one folder in the shared `SKILL.md` format: `skills/` holds the Claude Code copies and `codex/skills/` the Codex ones.
+Each skill is one folder in the shared `SKILL.md` format: `skills/` holds the Claude Code copies and `codex/skills/` the Codex ones. Pick one way to install for Claude Code: with both the plugin and the symlinks, every skill shows up twice.
 
-Run this from the repository root. Existing destinations are moved aside before each skill directory
-is linked, preventing a repeated install from creating a nested self-symlink.
+## As a Claude Code plugin
 
-```bash
-# SECURITY-REVIEW: Run only from this trusted checkout with the expected HOME.
-source_root="$PWD/skills"
-install_root="$HOME/.claude/skills"
-backup_root="$HOME/.claude/skills-backups/$(date +%Y%m%d-%H%M%S)-$$"
-mkdir -p "$install_root" "$backup_root"
-
-install_skill() {
-  local skill="$1"
-  local destination="$install_root/$skill"
-
-  if [[ -e "$destination" || -L "$destination" ]]; then
-    mv "$destination" "$backup_root/$skill"
-  fi
-  ln -s "$source_root/$skill" "$destination"
-}
-
-install_skill sergio-loop
-install_skill refine-loop
-install_skill docs-loop
-install_skill investigate
-install_skill review-pr
-install_skill review-code
-install_skill research
-install_skill implement
-install_skill kb-research
-install_skill kb-review
-install_skill grow-my-repo
-install_skill submit-awesome
-install_skill file-pr
-install_skill verified-reply
-install_skill revive
-install_skill eli5
-install_skill help-decide
+```text
+/plugin marketplace add GeiserX/sstack
+/plugin install sstack@sstack
 ```
 
-For Codex, run the same block with `source_root="$PWD/codex/skills"` and
-`install_root="$HOME/.agents/skills"`. Codex calls a skill as `$<name>`, and the Codex copies run only when
-named that way. The Stop hook below is Claude Code only, so in Codex each loop runs one pass
-per invocation, saves its state and reports how to resume.
+On Claude Code 2.1.275 or later, `/plugin install sstack --marketplace GeiserX/sstack` does both in one step. Plugin skills are namespaced: call them as `/sstack:full-loop`, `/sstack:file-pr` and so on. The plugin carries the skills only; the Stop hook below needs the installer.
 
-To let the goal loop continue in every repository, install the inert global runtime. The installer below
-moves any existing hook files into the same timestamped backup directory used above:
+## With npx
 
 ```bash
-# SECURITY-REVIEW: Install the reviewed runtime set together; do not mix versions.
-hook_root="$HOME/.claude/hooks"
-hook_backup_root="$HOME/.claude/hooks-backups/$(date +%Y%m%d-%H%M%S)-$$"
-mkdir -p "$hook_root" "$hook_backup_root"
-
-install_hook() {
-  local file="$1"
-  local destination="$hook_root/$file"
-
-  if [[ -e "$destination" || -L "$destination" ]]; then
-    mv "$destination" "$hook_backup_root/$file"
-  fi
-  ln -s "$PWD/runtime/$file" "$destination"
-}
-
-install_hook sergio_loop_state.py
-install_hook sergio-loop-session-hook.py
-install_hook sergio-loop-stop-hook.py
+npx skills add GeiserX/sstack
 ```
+
+## With the installer
+
+```bash
+git clone https://github.com/GeiserX/sstack && cd sstack && scripts/install.sh
+```
+
+`scripts/install.sh` links every skill from `skills/` into `~/.claude/skills/`. Name skills to link only
+those (`scripts/install.sh file-pr revive`). Anything already at a destination is moved into
+`~/.claude/skills-backups/<timestamp>-<pid>/` before the link is made, so a repeated install never nests a
+link inside an old one. It refuses to run when `~/.claude/skills` is itself a link to this checkout.
+
+For Codex, run `scripts/install.sh --codex`. It links `codex/skills/` into `~/.agents/skills/`, with backups
+in `~/.agents/skills-backups/`. Codex calls a skill as `$<name>`, and the Codex copies run only when named
+that way. The Stop hook below is Claude Code only, so in Codex each loop runs one pass per invocation,
+saves its state and reports how to resume.
+
+## The Stop hook
+
+To let the goal loop continue in every repository, install the inert global runtime with `--hooks`
+(add skill names or not, as above):
+
+```bash
+scripts/install.sh --hooks
+```
+
+It links `sergio_loop_state.py`, `sergio_loop_registration.py`, `sergio-loop-session-hook.py` and
+`sergio-loop-stop-hook.py` from `runtime/` into `~/.claude/hooks/`, moving any existing files into
+`~/.claude/hooks-backups/<timestamp>-<pid>/`, and prints the entries below. It never edits
+`settings.json` itself.
 
 Merge these entries into `~/.claude/settings.json`; preserve any existing hooks such as notifications:
 
@@ -106,6 +83,11 @@ The SessionStart hook binds the loop to the exact Claude session. The Stop hook 
 state outside the repository and blocks only for that active repository/session. Background tasks, scheduled
 wakeups, unrelated sessions, inactive repositories, malformed state, and context/auth/rate-limit failures
 are allowed to stop normally.
+
+If you run several Claude Code accounts, each with its own `CLAUDE_CONFIG_DIR` under one folder, the
+SessionStart hook also adds the Stop entry to any account's `settings.json` that lacks it. It looks in
+`~/.config/sstack/accounts/` by default; set `SERGIO_LOOP_ACCOUNTS_DIR` to point it at your folder. It only
+ever adds a missing entry and never creates a settings file.
 
 Restart Claude Code or open a fresh session after changing `settings.json`.
 

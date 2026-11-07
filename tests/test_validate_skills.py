@@ -128,6 +128,62 @@ printf '%s\\n' "validated"
             if finding.severity == "ERROR"
         }
 
+    def make_repo(self, *, readme_skills: list[str], plugin_version: str, market_version: str) -> Path:
+        repo = self.root / "repo"
+        skills = repo / "skills"
+        skills.mkdir(parents=True)
+        for name in ("alpha", "beta"):
+            (skills / name).mkdir()
+            (skills / name / "SKILL.md").write_text(
+                f"---\nname: {name}\ndescription: A test skill.\n---\n\n# {name}\n",
+                encoding="utf-8",
+            )
+        rows = "".join(f"| [`{name}`](skills/{name}/SKILL.md) | say it | does it |\n" for name in readme_skills)
+        (repo / "README.md").write_text(
+            "# repo\n\n| Skill | Say | What it does |\n|---|---|---|\n" + rows,
+            encoding="utf-8",
+        )
+        plugin_dir = repo / ".claude-plugin"
+        plugin_dir.mkdir()
+        (plugin_dir / "plugin.json").write_text(
+            json.dumps({"name": "repo", "version": plugin_version, "skills": "./skills/"}),
+            encoding="utf-8",
+        )
+        (plugin_dir / "marketplace.json").write_text(
+            json.dumps({"name": "repo", "plugins": [{"name": "repo", "source": "./", "version": market_version}]}),
+            encoding="utf-8",
+        )
+        return repo
+
+    def repo_findings(self, repo: Path) -> list[object]:
+        validator = validate_skills.Validator([repo / "skills"], repo=repo)
+        return [finding for finding in validator.validate() if finding.severity == "ERROR"]
+
+    def test_repo_with_rows_and_matching_versions_passes(self) -> None:
+        repo = self.make_repo(readme_skills=["alpha", "beta"], plugin_version="1.0.0", market_version="1.0.0")
+
+        self.assertEqual([], self.repo_findings(repo))
+
+    def test_skill_without_a_readme_row_is_rejected(self) -> None:
+        repo = self.make_repo(readme_skills=["alpha"], plugin_version="1.0.0", market_version="1.0.0")
+
+        findings = self.repo_findings(repo)
+
+        self.assertEqual(["readme-row"], [finding.code for finding in findings])
+        self.assertIn("beta", findings[0].message)
+
+    def test_mismatched_plugin_versions_are_rejected(self) -> None:
+        repo = self.make_repo(readme_skills=["alpha", "beta"], plugin_version="1.1.0", market_version="1.0.0")
+
+        self.assertEqual(["plugin-version"], [finding.code for finding in self.repo_findings(repo)])
+
+    def test_plugin_skills_path_must_be_the_skills_folder(self) -> None:
+        repo = self.make_repo(readme_skills=["alpha", "beta"], plugin_version="1.0.0", market_version="1.0.0")
+        plugin = repo / ".claude-plugin" / "plugin.json"
+        plugin.write_text(json.dumps({"name": "repo", "version": "1.0.0", "skills": "./vendor/"}), encoding="utf-8")
+
+        self.assertEqual(["plugin-version"], [finding.code for finding in self.repo_findings(repo)])
+
     def test_valid_fixture(self) -> None:
         self.make_skill()
 
