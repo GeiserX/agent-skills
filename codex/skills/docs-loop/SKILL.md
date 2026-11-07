@@ -1,6 +1,6 @@
 ---
 name: docs-loop
-description: Use when Sergio asks to audit docs, check documentation for stale claims, or verify docs against the code.
+description: Use when the user asks to audit docs, check documentation for stale claims, or verify docs against the code.
 argument-hint: "[--apply [--open-prs]] [--state-dir=PATH] [--root=PATH | REPO_PATH ...]"
 ---
 

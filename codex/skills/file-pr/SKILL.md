@@ -71,6 +71,9 @@ The preference now applies to every new thread.
   and say in one sentence what to look at. Upload them as GitHub attachments so they render inline (the
   `github-video-embed` recipe works for images too). A UI PR with no image is not ready to file.
 - Keep out customer names, private hostnames, tokens and personal data.
+- Put provenance only in a `References` section at the end: when the work started in a chat thread or an
+  issue discussion, link the root of that thread, and open each link once before posting to check it lands
+  there. The prose above it states the decision as the team's own.
 
 ## Filing
 
@@ -79,6 +82,8 @@ The preference now applies to every new thread.
 2. Write the body to a temporary file and pass it with `--body-file`, so the shell does not mangle it.
 3. Open a ready PR, not a draft, so required checks and review bots run: `gh pr create --title "<title>" --body-file
    <file>`. An existing PR is updated with `gh pr edit <n> --title "<title>" --body-file <file>`.
-4. Report the PR URL. If asked to see it through, follow the checks (`gh pr checks <n> --watch`) and fix what fails.
+4. Never request reviewers on GitHub (`--reviewer`, the Reviewers box, a re-request after a fix) unless the
+   repository's own rules ask for it.
+5. Report the PR URL. If asked to see it through, follow the checks (`gh pr checks <n> --watch`) and fix what fails.
 
 Done when the PR exists, its title and body follow this file, and its URL is in the reply.
