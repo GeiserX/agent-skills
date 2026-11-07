@@ -12,6 +12,8 @@ further, before inspecting the repository, and before answering anything. Do not
 reimplement what that skill does: load it and follow it. If you find yourself planning the work in this
 turn without having loaded it, you have already gone wrong. Stop and load it.
 
+Apply [the shared loop contract](references/loop-contract.md) to every operation; both loops follow it too.
+
 The goal is this skill's arguments. If none were given, the goal is whatever the repository's own state
 says is unfinished.
 
