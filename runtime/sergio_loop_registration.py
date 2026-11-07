@@ -30,7 +30,7 @@ from typing import Any
 # Overridable so tests never write the operator's real accounts — the same reason `pointer_path`
 # honours the runtime-directory override. A test that repairs live configuration is not a test.
 ACCOUNTS_DIRECTORY_ENV = "SERGIO_LOOP_ACCOUNTS_DIR"
-DEFAULT_ACCOUNTS_DIRECTORY = "~/.config/neutral-driver/accounts"
+DEFAULT_ACCOUNTS_DIRECTORY = "~/.config/sstack/accounts"
 
 HOOK_MARKER = "sergio-loop-stop-hook"
 MAX_SETTINGS_BYTES = 1024 * 1024
